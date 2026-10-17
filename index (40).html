@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Londres para Latinos — Guía de supervivencia</title>
+<meta name="description" content="App bilingüe (español/inglés) para latinos que llegan a Londres: mapa interactivo, metro y buses en vivo, centros de ayuda, frases para cada situación, emergencias y primeros pasos.">
+<meta name="theme-color" content="#EB0A1E">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Londres Latinos">
+
+<!-- Open Graph / Twitter -->
+<meta property="og:title" content="Londres para Latinos — Guía de supervivencia">
+<meta property="og:description" content="Mapa, metro y buses en vivo, centros de ayuda, frases en inglés para cada situación y emergencias. En español e inglés.">
+<meta property="og:image" content="https://haroldco45.github.io/londres-para-latinos/og-image.png">
+<meta property="og:url" content="https://haroldco45.github.io/londres-para-latinos/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Londres para Latinos — Guía de supervivencia">
+<meta name="twitter:description" content="Mapa, transporte en vivo, ayuda y frases en inglés para latinos recién llegados a Londres.">
+<meta name="twitter:image" content="https://haroldco45.github.io/londres-para-latinos/og-image.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --red:#EB0A1E; --red-dark:#B30715; --ink:#0B0B0C; --ink-2:#3A3A3F; --muted:#6E6E76;
+  --line:#E6E6EA; --bg:#FFFFFF; --bg-2:#F5F5F7; --ok:#0A8A3A; --warn:#C77700;
+  --shadow:0 6px 24px rgba(0,0,0,.08); --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Barlow',system-ui,sans-serif;font-size:16px;line-height:1.45}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+a{color:var(--red);text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+h1,h2,h3{font-family:'Barlow Condensed','Barlow',sans-serif;letter-spacing:.2px;line-height:1.1}
+h2{font-size:1.7rem;text-transform:uppercase}
+h3{font-size:1.2rem}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+
+/* Header */
+header.top{position:sticky;top:0;z-index:1000;background:#fff;border-bottom:1px solid var(--line)}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;max-width:980px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--red);color:#fff;display:grid;place-items:center;font-family:'Barlow Condensed';font-weight:800;font-size:1.05rem;flex:none}
+.brand b{font-family:'Barlow Condensed';font-size:1.25rem;text-transform:uppercase;display:block;line-height:1}
+.brand small{color:var(--muted);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.lang{display:flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden;flex:none}
+.lang button{border:0;background:#fff;padding:6px 12px;font-weight:700;font-size:.85rem}
+.lang button.on{background:var(--ink);color:#fff}
+.clocks{display:flex;gap:8px;padding:0 16px 8px;max-width:980px;margin:0 auto;font-size:.82rem;color:var(--ink-2);flex-wrap:wrap}
+.clock{background:var(--bg-2);border-radius:999px;padding:3px 10px}
+.clock b{color:var(--ink)}
+
+/* Bottom nav */
+nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:1000;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+nav.tabs button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem;font-weight:600;color:var(--muted);padding:4px 0}
+nav.tabs svg{width:24px;height:24px}
+nav.tabs button.on{color:var(--red)}
+nav.tabs button.sos{color:#fff}
+nav.tabs button.sos span.ic{background:var(--red);border-radius:50%;width:40px;height:40px;display:grid;place-items:center;margin-top:-18px;box-shadow:0 4px 14px rgba(235,10,30,.4)}
+nav.tabs button.sos em{color:var(--red);font-style:normal}
+
+section.view{display:none;padding:18px 0 30px}
+section.view.on{display:block}
+
+/* Hero */
+.hero{position:relative;border-radius:var(--r);overflow:hidden;min-height:260px;background:#111 center/cover no-repeat;color:#fff;display:flex;align-items:flex-end;margin-bottom:18px}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 20%,rgba(0,0,0,.78))}
+.hero .in{position:relative;z-index:1;padding:20px}
+.hero .kicker{display:inline-block;background:var(--red);padding:3px 10px;border-radius:4px;font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.hero h1{font-size:2.3rem;text-transform:uppercase}
+.hero p{max-width:560px;opacity:.95;margin-top:6px}
+.credit{position:absolute;right:8px;top:8px;z-index:1;font-size:.65rem;background:rgba(0,0,0,.5);padding:2px 6px;border-radius:4px;color:#ddd}
+
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:700px){.g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.g2.keep{grid-template-columns:1fr 1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.card.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.card.red{background:var(--red);color:#fff;border-color:var(--red)}
+.tile{display:flex;flex-direction:column;gap:6px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);transition:transform .15s}
+.tile:active{transform:scale(.98)}
+.tile .em{font-size:1.6rem}
+.tile b{font-family:'Barlow Condensed';font-size:1.1rem;text-transform:uppercase}
+.tile small{color:var(--muted);font-size:.82rem}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:22px 0 10px;border-left:5px solid var(--red);padding-left:10px}
+.sec-head p{color:var(--muted);font-size:.9rem}
+.pill{display:inline-block;background:var(--bg-2);border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:600}
+.pill.red{background:#FDE7E9;color:var(--red-dark)}
+.pill.ok{background:#E3F5EA;color:var(--ok)}
+.pill.warn{background:#FFF1DC;color:var(--warn)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:11px 16px;font-weight:700;font-size:.95rem;background:var(--ink);color:#fff}
+.btn.red{background:var(--red)}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn.sm{padding:7px 12px;font-size:.85rem;border-radius:8px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.5}
+input,select,textarea{font-family:inherit;font-size:1rem;border:2px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
+label.f{display:block;font-weight:600;font-size:.88rem;margin:10px 0 4px}
+.row{display:flex;gap:8px;align-items:center}
+.row > *{min-width:0}
+.mt{margin-top:12px}.mt2{margin-top:20px}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.notice{background:#FFF8E6;border:1px solid #F3D38A;border-radius:10px;padding:10px 12px;font-size:.88rem}
+.notice.red{background:#FDE7E9;border-color:#F5B2B8}
+ul.clean{list-style:none}
+ul.dots{padding-left:18px}
+ul.dots li{margin:4px 0}
+
+/* Weather / money widgets */
+.wx{display:flex;gap:14px;align-items:center}
+.wx .t{font-family:'Barlow Condensed';font-size:2.6rem;font-weight:800}
+.days{display:flex;gap:8px;margin-top:8px}
+.days div{flex:1;background:rgba(255,255,255,.08);border-radius:8px;padding:6px;text-align:center;font-size:.8rem}
+
+/* Map */
+#map{height:62vh;min-height:380px;border-radius:var(--r);border:1px solid var(--line);z-index:1}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:2px solid var(--ink);background:#fff;border-radius:999px;padding:6px 12px;font-weight:700;font-size:.82rem;white-space:nowrap}
+.chip.on{background:var(--ink);color:#fff}
+.leaflet-popup-content{font-family:'Barlow';font-size:.9rem}
+.leaflet-popup-content b{font-size:1rem}
+.pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:grid;place-items:center;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.pin span{transform:rotate(45deg);font-size:14px}
+
+/* Transport */
+.status-list{display:grid;gap:6px}
+.st{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--bg-2)}
+.st .bar{width:8px;align-self:stretch;border-radius:4px}
+.st .nm{font-weight:700;flex:1}
+.leg{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.leg:last-child{border-bottom:0}
+.leg .md{flex:none;width:34px;height:34px;border-radius:8px;background:var(--bg-2);display:grid;place-items:center;font-size:1.1rem}
+.arr{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.arr b.min{font-family:'Barlow Condensed';font-size:1.3rem;color:var(--red);flex:none}
+table.fares{width:100%;border-collapse:collapse;font-size:.92rem}
+table.fares td,table.fares th{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+table.fares th{font-family:'Barlow Condensed';text-transform:uppercase;font-size:.85rem;color:var(--muted)}
+table.fares td:last-child{font-weight:700;text-align:right;white-space:nowrap}
+
+/* Phrases */
+.sit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.sit{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px;text-align:left}
+.sit.on{border-color:var(--red);background:#FFF5F6}
+.sit .em{font-size:1.5rem}
+.sit b{display:block;font-size:.95rem;margin-top:4px}
+.dlg{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.bub{max-width:88%;border-radius:14px;padding:10px 12px;position:relative}
+.bub.A{background:var(--bg-2);align-self:flex-start;border-top-left-radius:4px}
+.bub.B{background:var(--ink);color:#fff;align-self:flex-end;border-top-right-radius:4px}
+.bub .who{font-size:.7rem;text-transform:uppercase;letter-spacing:.6px;opacity:.7;font-weight:700}
+.bub .en{font-weight:700;font-size:1.05rem}
+.bub .es{font-size:.9rem;opacity:.85;margin-top:2px}
+.bub .fon{font-size:.8rem;opacity:.65;font-style:italic;margin-top:2px}
+.say{border:0;background:var(--red);color:#fff;border-radius:999px;width:30px;height:30px;font-size:.85rem;flex:none}
+.bub .head{display:flex;justify-content:space-between;gap:8px;align-items:start}
+.pocket{display:grid;gap:8px}
+.pk{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px}
+.pk div{flex:1}
+.pk .en{font-weight:700}
+.pk .es{font-size:.85rem;color:var(--muted)}
+.showcard{position:fixed;inset:0;background:#fff;z-index:3000;display:none;flex-direction:column;justify-content:center;padding:28px;text-align:center}
+.showcard.on{display:flex}
+.showcard .big{font-family:'Barlow Condensed';font-weight:800;font-size:2.3rem;line-height:1.1}
+.showcard .addr{margin-top:18px;font-size:1.6rem;font-weight:700;color:var(--red)}
+
+/* SOS */
+.sos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.sos-grid{grid-template-columns:1fr 1fr}}
+.call{display:flex;flex-direction:column;gap:2px;border-radius:12px;padding:14px;color:#fff;background:var(--ink)}
+.call.red{background:var(--red)}
+.call .n{font-family:'Barlow Condensed';font-size:2rem;font-weight:800;line-height:1}
+.call small{opacity:.85}
+.org{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.org:last-child{border-bottom:0}
+.org .ic{flex:none;width:44px;height:44px;border-radius:10px;background:#FDE7E9;display:grid;place-items:center;font-size:1.3rem}
+.org .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+details.acc{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:#fff}
+details.acc summary{padding:12px 14px;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.acc summary::after{content:"+";color:var(--red);font-size:1.3rem;line-height:1}
+details.acc[open] summary::after{content:"–"}
+details.acc .body{padding:0 14px 14px}
+details.acc ol{padding-left:20px}
+details.acc ol li{margin:5px 0}
+
+/* checklist */
+.chk{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.chk input{width:22px;height:22px;flex:none;accent-color:var(--red);margin-top:2px}
+.chk.done .t{text-decoration:line-through;color:var(--muted)}
+.progress{height:8px;background:var(--bg-2);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--red);transition:width .3s}
+
+/* Gallery */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.ph{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:4/3;background:var(--bg-2)}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph span{position:absolute;left:0;right:0;bottom:0;padding:16px 8px 6px;color:#fff;font-weight:700;font-size:.85rem;background:linear-gradient(transparent,rgba(0,0,0,.75))}
+.ph .ph-fb{display:grid;place-items:center;height:100%;font-size:2rem}
+.video{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vlink{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--ink)}
+.vlink .play{flex:none;width:44px;height:44px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center}
+
+/* Panel (sub pages) */
+.back{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ink);background:none;border:0;margin-bottom:10px;font-size:.95rem}
+
+footer.foot{border-top:1px solid var(--line);margin-top:30px;padding:18px 16px;text-align:center;font-size:.8rem;color:var(--muted)}
+footer.foot b{color:var(--ink)}
+.install{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:1500;background:var(--ink);color:#fff;border-radius:14px;padding:12px 14px;display:none;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.install.on{display:flex}
+.install p{flex:1;font-size:.88rem}
+.toast{position:fixed;left:50%;top:80px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;z-index:4000;font-weight:600;display:none;max-width:90%}
+.toast.on{display:block}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.splash{position:fixed;inset:0;background:var(--red);color:#fff;z-index:5000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .5s}
+.splash h1{font-size:2.6rem;text-transform:uppercase}
+.splash small{opacity:.9}
+.splash.off{opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div class="logo" style="width:72px;height:72px;font-size:1.8rem;background:#fff;color:var(--red);border-radius:18px">LxL</div>
+  <h1>Londres para Latinos</h1>
+  <small>Desarrollada por Vibras Positivas HM</small>
+</div>
+
+<header class="top">
+  <div class="top-row">
+    <div class="brand">
+      <div class="logo">LxL</div>
+      <div style="min-width:0"><b data-t="appName">Londres para Latinos</b><small data-t="tagline">Tu guía para sobrevivir en la ciudad</small></div>
+    </div>
+    <div class="lang" role="group" aria-label="Idioma">
+      <button id="lang-es" class="on" onclick="setLang('es')">ES</button>
+      <button id="lang-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+  <div class="clocks">
+    <span class="clock">🇬🇧 <span data-t="london">Londres</span> <b id="clk-lon">--:--</b></span>
+    <span class="clock">🇨🇴 Colombia <b id="clk-col">--:--</b></span>
+    <span class="clock" id="clk-diff"></span>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= INICIO ================= -->
+<section class="view on" id="v-home">
+  <div class="hero" id="hero">
+    <span class="credit" id="hero-credit"></span>
+    <div class="in">
+      <span class="kicker" data-t="heroKicker">Recién llegado</span>
+      <h1 data-t="heroTitle">Bienvenido a Londres</h1>
+      <p data-t="heroText">Mapa, metro y buses en vivo, ayuda en español, frases para cada situación y todo lo que necesitas en tus primeros días.</p>
+    </div>
+  </div>
+
+  <div class="notice" id="fare-alert"></div>
+
+  <div class="grid g3 mt">
+    <button class="tile" onclick="go('map')"><span class="em">🗺️</span><b data-t="tMap">Mapa</b><small data-t="tMapS">Ayuda, hospitales, barrios latinos</small></button>
+    <button class="tile" onclick="go('transit')"><span class="em">🚇</span><b data-t="tTransit">Metro y bus</b><small data-t="tTransitS">En vivo, rutas y tarifas 2026</small></button>
+    <button class="tile" onclick="go('phrases')"><span class="em">💬</span><b data-t="tPhrases">Frases</b><small data-t="tPhrasesS">Conversaciones con audio</small></button>
+    <button class="tile" onclick="go('sos')"><span class="em">🆘</span><b data-t="tSos">Ayuda / SOS</b><small data-t="tSosS">Emergencias y asesoría</small></button>
+    <button class="tile" onclick="go('first')"><span class="em">✅</span><b data-t="tFirst">Primeros días</b><small data-t="tFirstS">Lista paso a paso</small></button>
+    <button class="tile" onclick="go('money')"><span class="em">💷</span><b data-t="tMoney">Dinero</b><small data-t="tMoneyS">Cambio en vivo y salario</small></button>
+    <button class="tile" onclick="go('culture')"><span class="em">☕</span><b data-t="tCulture">Costumbres</b><small data-t="tCultureS">Cómo se comportan los ingleses</small></button>
+    <button class="tile" onclick="go('safety')"><span class="em">🛡️</span><b data-t="tSafety">Seguridad</b><small data-t="tSafetyS">Robos, estafas y taxis</small></button>
+    <button class="tile" onclick="go('media')"><span class="em">📸</span><b data-t="tMedia">Fotos y videos</b><small data-t="tMediaS">Conoce la ciudad antes de ir</small></button>
+  </div>
+
+  <div class="grid g2 mt2">
+    <div class="card dark" id="wx-card">
+      <div class="small" style="opacity:.75" data-t="wxTitle">Clima en Londres ahora</div>
+      <div class="wx mt" id="wx"><span class="spin"></span></div>
+      <div class="days" id="wx-days"></div>
+      <div class="small mt" style="opacity:.75" id="wx-tip"></div>
+    </div>
+    <div class="card" id="fx-card">
+      <div class="small muted" data-t="fxTitle">Libra esterlina hoy</div>
+      <div id="fx-main" class="mt"><span class="spin"></span></div>
+      <div class="small muted mt" id="fx-upd"></div>
+      <button class="btn sm ghost mt" onclick="go('money')" data-t="fxMore">Convertidor completo →</button>
+    </div>
+  </div>
+
+  <div class="card mt2" id="myaddr-card">
+    <h3 data-t="myAddrT">📍 Mi dirección en Londres</h3>
+    <p class="small muted" data-t="myAddrS">Guárdala aquí. Si te pierdes, la app te ayuda a volver o se la muestras a alguien. Solo queda en tu celular.</p>
+    <div class="row mt">
+      <input id="my-addr" placeholder="Ej: 25 Coldharbour Lane, SW9 8PR">
+      <button class="btn red" onclick="saveAddr()" data-t="save">Guardar</button>
+    </div>
+    <div class="row mt" style="flex-wrap:wrap">
+      <button class="btn sm" onclick="routeHome()" data-t="takeHome">🏠 Llévame a casa</button>
+      <button class="btn sm ghost" onclick="openShow()" data-t="showSomeone">🙋 Mostrar a alguien</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MAPA ================= -->
+<section class="view" id="v-map">
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tMap">Mapa</h2><p data-t="mapSub">Toca un punto para ver detalles. Datos de transporte en vivo de TfL.</p></div></div>
+  <div class="chips" id="map-chips"></div>
+  <div id="map"></div>
+  <div class="row mt" style="flex-wrap:wrap">
+    <button class="btn red sm" onclick="locateMe()" data-t="locate">📍 Dónde estoy</button>
+    <button class="btn sm" onclick="nearbyStops()" data-t="nearby">🚏 Paradas cerca de mí</button>
+    <button class="btn sm ghost" onclick="toggleTubeLines()" id="btn-lines" data-t="showLines">🚇 Dibujar líneas del metro</button>
+  </div>
+  <div id="map-info" class="mt"></div>
+</section>
+
+<!-- ================= TRANSPORTE ================= -->
+<section class="view" id="v-transit">
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tTransit">Metro y bus</h2><p data-t="transitSub">Información oficial en vivo de Transport for London (TfL).</p></div></div>
+
+  <div class="card">
+    <h3 data-t="planT">🧭 ¿Cómo llego?</h3>
+    <label class="f" data-t="from">Desde</label>
+    <div class="row"><input id="j-from" placeholder="Estación, lugar o código postal"><button class="btn sm ghost" onclick="useMyLoc('j-from')" title="GPS">📍</button></div>
+    <label class="f" data-t="to">Hasta</label>
+    <div class="row"><input id="j-to" placeholder="Ej: Elephant & Castle, Big Ben, SW9 8PR"><button class="btn sm ghost" onclick="fillHome('j-to')" title="Casa">🏠</button></div>
+    <button class="btn red block mt" onclick="planJourney()" data-t="search">Buscar ruta</button>
+    <div id="j-out" class="mt"></div>
+  </div>
+
+  <div class="card mt">
+    <div class="row" style="justify-content:space-between"><h3 data-t="statusT">🚦 Estado de las líneas</h3><button class="btn sm ghost" onclick="loadStatus()">↻</button></div>
+    <div id="status" class="status-list mt"><span class="spin"></span></div>
+  </div>
+
+  <div class="card mt">
+    <h3 data-t="arrT">⏱️ Próximos trenes y buses</h3>
+    <p class="small muted" data-t="arrS">Escribe el nombre de una estación o parada.</p>
+    <div class="row mt"><input id="arr-q" placeholder="Ej: Brixton, Oxford Circus"><button class="btn red" onclick="searchStop()" data-t="search2">Buscar</button></div>
+    <div id="arr-out" class="mt"></div>
+  </div>
+
+  <div class="sec-head"><div><h2 data-t="faresT">Tarifas 2026</h2><p data-t="faresS">Con tarjeta contactless, celular u Oyster (mismo precio).</p></div></div>
+  <div class="card">
+    <table class="fares" id="fares-table"></table>
+    <p class="small muted mt" data-t="faresNote">Fuente: TfL / Alcaldía de Londres. Tarifas del metro vigentes desde el 1 de marzo de 2026. Los topes diarios y semanales siguen congelados hasta marzo de 2027.</p>
+  </div>
+
+  <div class="sec-head"><div><h2 data-t="howT">Cómo funciona</h2></div></div>
+  <div id="how-acc"></div>
+</section>
+
+<!-- ================= FRASES ================= -->
+<section class="view" id="v-phrases">
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tPhrases">Frases</h2><p data-t="phrSub">Conversaciones de ejemplo. Toca 🔊 para escuchar la pronunciación británica.</p></div></div>
+  <div class="sit-grid" id="sits"></div>
+  <div id="dlg-wrap" class="card mt" style="display:none">
+    <div class="row" style="justify-content:space-between"><h3 id="dlg-title"></h3><button class="btn sm" onclick="playAll()" data-t="playAll">▶ Todo</button></div>
+    <p class="small muted" id="dlg-ctx"></p>
+    <div class="dlg" id="dlg"></div>
+    <div id="dlg-tips" class="notice mt"></div>
+  </div>
+  <div class="sec-head"><div><h2 data-t="pocketT">Frases de bolsillo</h2><p data-t="pocketS">Las que más vas a usar.</p></div></div>
+  <div class="pocket" id="pocket"></div>
+  <div class="card mt">
+    <h3 data-t="speedT">🐢 Velocidad de la voz</h3>
+    <input type="range" min="0.5" max="1.1" step="0.1" value="0.85" id="rate" style="padding:0;border:0">
+  </div>
+</section>
+
+<!-- ================= SOS ================= -->
+<section class="view" id="v-sos">
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tSos">Ayuda / SOS</h2><p data-t="sosSub">Toca para llamar. En el Reino Unido las llamadas a 999 y 111 son gratis.</p></div></div>
+  <div class="sos-grid">
+    <a class="call red" href="tel:999"><span class="n">999</span><small data-t="c999">Emergencia: policía, ambulancia, bomberos</small></a>
+    <a class="call" href="tel:111"><span class="n">111</span><small data-t="c111">NHS: salud urgente que no es emergencia</small></a>
+    <a class="call" href="tel:101"><span class="n">101</span><small data-t="c101">Policía: denuncias que no son urgentes</small></a>
+  </div>
+  <div class="notice mt" data-t="sosNote">💡 Si no hablas inglés, al llamar di: <b>"Spanish, please"</b> — los servicios de emergencia tienen intérpretes.</div>
+
+  <div class="sec-head"><div><h2 data-t="orgsT">Te asesoran en español</h2><p data-t="orgsS">Organizaciones latinas y oficiales. Casi todo es gratis.</p></div></div>
+  <div class="card" id="orgs"></div>
+
+  <div class="sec-head"><div><h2 data-t="sitsT">¿Qué hago si…?</h2></div></div>
+  <div id="sos-acc"></div>
+</section>
+
+<!-- ================= SUBPÁGINAS ================= -->
+<section class="view" id="v-first">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tFirst">Primeros días</h2><p data-t="firstSub">Marca lo que ya hiciste. Se guarda en tu celular.</p></div></div>
+  <div class="progress"><i id="prog"></i></div>
+  <p class="small muted mt" id="prog-t"></p>
+  <div class="card mt" id="checklist"></div>
+  <div class="sec-head"><div><h2 data-t="visaT">Antes de viajar</h2></div></div>
+  <div id="visa-acc"></div>
+</section>
+
+<section class="view" id="v-money">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tMoney">Dinero</h2><p data-t="moneySub">Tasas en vivo. Úsalas como referencia: tu banco o casa de cambio cobra un margen.</p></div></div>
+  <div class="card">
+    <label class="f" data-t="amount">Cantidad</label>
+    <div class="row"><input id="fx-amt" type="number" value="10" inputmode="decimal"><select id="fx-from" style="max-width:120px"></select></div>
+    <div class="mt" id="fx-results"></div>
+  </div>
+  <div class="grid g2 mt">
+    <div class="card red"><div class="small" style="opacity:.85" data-t="wageT">Salario mínimo (21+ años)</div><div style="font-family:'Barlow Condensed';font-size:2.4rem;font-weight:800">£12.71<small style="font-size:1rem">/h</small></div><div class="small" data-t="wageS">Desde el 1 de abril de 2026. 18–20 años: £10.85/h.</div><div class="small mt" id="wage-cop"></div></div>
+    <div class="card"><h3 data-t="tipsT">💡 Ahorra</h3><ul class="dots small mt" id="money-tips"></ul></div>
+  </div>
+</section>
+
+<section class="view" id="v-culture">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tCulture">Costumbres</h2><p data-t="cultSub">Lo que nadie te dice y te ahorra malos ratos.</p></div></div>
+  <div class="grid g2" id="culture"></div>
+  <div class="sec-head"><div><h2 data-t="slangT">Inglés de la calle</h2><p data-t="slangS">Palabras que vas a oír todos los días.</p></div></div>
+  <div class="card"><table class="fares" id="slang"></table></div>
+</section>
+
+<section class="view" id="v-safety">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tSafety">Seguridad</h2><p data-t="safeSub">Londres es segura en general, pero estos son los riesgos reales.</p></div></div>
+  <div id="safety"></div>
+</section>
+
+<section class="view" id="v-media">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tMedia">Fotos y videos</h2><p data-t="mediaSub">Fotos reales de Wikimedia Commons. Toca una foto para verla en el mapa.</p></div></div>
+  <div class="gal" id="gallery"></div>
+  <div class="sec-head"><div><h2 data-t="vidT">Videos</h2><p data-t="vidS">Videos reales. Los de búsqueda abren YouTube con los más recientes.</p></div></div>
+  <div class="video"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/VG8Tvq3YwwQ" title="TfL contactless" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+  <p class="small muted mt" data-t="vidCap">Video oficial de TfL: pagar el metro con tarjeta contactless (en inglés).</p>
+  <div class="grid g2 mt" id="vlinks"></div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div><b>Desarrollada por Vibras Positivas HM — Derechos de Autor Reservados</b></div>
+  <div class="mt" data-t="footNote">Información de referencia, no es asesoría legal. Verifica trámites y tarifas en gov.uk y tfl.gov.uk. Datos de transporte: Powered by TfL Open Data. Mapa © OpenStreetMap, © CARTO. Fotos: Wikimedia Commons.</div>
+  <div class="mt"><span data-t="updated">Actualizada</span>: <span id="upd"></span> (hora Colombia)</div>
+</footer>
+
+<nav class="tabs">
+  <button data-v="home" class="on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span data-t="nHome">Inicio</span></button>
+  <button data-v="map" onclick="go('map')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/></svg><span data-t="nMap">Mapa</span></button>
+  <button data-v="sos" class="sos" onclick="go('sos')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></span><em data-t="nSos">SOS</em></button>
+  <button data-v="transit" onclick="go('transit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l2-4M16 21l-2-4"/><circle cx="9" cy="14" r=".5"/><circle cx="15" cy="14" r=".5"/></svg><span data-t="nTransit">Transporte</span></button>
+  <button data-v="phrases" onclick="go('phrases')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span data-t="nPhrases">Frases</span></button>
+</nav>
+
+<div class="install" id="install"><p data-t="installT">Instala la app en tu celular para usarla sin internet.</p><button class="btn red sm" id="install-btn" data-t="install">Instalar</button><button class="btn sm" onclick="this.parentNode.classList.remove('on')">✕</button></div>
+<div class="toast" id="toast"></div>
+<div class="showcard" id="showcard" onclick="this.classList.remove('on')">
+  <div class="big">I'm new in London and I'm lost.<br>I don't speak much English.<br>Could you help me get to this address, please?</div>
+  <div class="addr" id="show-addr"></div>
+  <div class="mt2 muted" data-t="tapClose">(Toca para cerrar)</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* =========================================================
+   Londres para Latinos — Vibras Positivas HM
+   ========================================================= */
+const TFL = 'https://api.tfl.gov.uk';
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('lxl_'+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k, v){ try{ localStorage.setItem('lxl_'+k, JSON.stringify(v)); }catch(e){} }
+};
+let LANG = store.get('lang','es');
+const L = (o)=> (o && typeof o==='object') ? (o[LANG] ?? o.es) : o;
+
+/* ---------- UI strings ---------- */
+const T = {
+  appName:{es:'Londres para Latinos',en:'London for Latinos'},
+  tagline:{es:'Tu guía para sobrevivir en la ciudad',en:'Your survival guide to the city'},
+  london:{es:'Londres',en:'London'},
+  heroKicker:{es:'Recién llegado',en:'Just arrived'},
+  heroTitle:{es:'Bienvenido a Londres',en:'Welcome to London'},
+  heroText:{es:'Mapa, metro y buses en vivo, ayuda en español, frases para cada situación y todo lo que necesitas en tus primeros días.',en:'Map, live Tube and buses, help in Spanish, phrases for every situation and everything you need in your first days.'},
+  tMap:{es:'Mapa',en:'Map'}, tMapS:{es:'Ayuda, hospitales, barrios latinos',en:'Help, hospitals, Latin areas'},
+  tTransit:{es:'Metro y bus',en:'Tube & bus'}, tTransitS:{es:'En vivo, rutas y tarifas 2026',en:'Live, routes and 2026 fares'},
+  tPhrases:{es:'Frases',en:'Phrases'}, tPhrasesS:{es:'Conversaciones con audio',en:'Dialogues with audio'},
+  tSos:{es:'Ayuda / SOS',en:'Help / SOS'}, tSosS:{es:'Emergencias y asesoría',en:'Emergencies & advice'},
+  tFirst:{es:'Primeros días',en:'First days'}, tFirstS:{es:'Lista paso a paso',en:'Step-by-step checklist'},
+  tMoney:{es:'Dinero',en:'Money'}, tMoneyS:{es:'Cambio en vivo y salario',en:'Live rates and wages'},
+  tCulture:{es:'Costumbres',en:'Customs'}, tCultureS:{es:'Cómo se comportan los ingleses',en:'How Londoners behave'},
+  tSafety:{es:'Seguridad',en:'Safety'}, tSafetyS:{es:'Robos, estafas y taxis',en:'Theft, scams and taxis'},
+  tMedia:{es:'Fotos y videos',en:'Photos & videos'}, tMediaS:{es:'Conoce la ciudad antes de ir',en:'See the city before you go'},
+  wxTitle:{es:'Clima en Londres ahora',en:'London weather now'},
+  fxTitle:{es:'Libra esterlina hoy',en:'Pound sterling today'}, fxMore:{es:'Convertidor completo →',en:'Full converter →'},
+  myAddrT:{es:'📍 Mi dirección en Londres',en:'📍 My address in London'},
+  myAddrS:{es:'Guárdala aquí. Si te pierdes, la app te ayuda a volver o se la muestras a alguien. Solo queda en tu celular.',en:'Save it here. If you get lost, the app routes you back or you can show it to someone. It stays on your phone only.'},
+  save:{es:'Guardar',en:'Save'}, takeHome:{es:'🏠 Llévame a casa',en:'🏠 Take me home'}, showSomeone:{es:'🙋 Mostrar a alguien',en:'🙋 Show someone'},
+  mapSub:{es:'Toca un punto para ver detalles. Datos de transporte en vivo de TfL.',en:'Tap a pin for details. Live transport data from TfL.'},
+  locate:{es:'📍 Dónde estoy',en:'📍 Where am I'}, nearby:{es:'🚏 Paradas cerca de mí',en:'🚏 Stops near me'},
+  showLines:{es:'🚇 Dibujar líneas del metro',en:'🚇 Draw Tube lines'},
+  transitSub:{es:'Información oficial en vivo de Transport for London (TfL).',en:'Official live information from Transport for London (TfL).'},
+  planT:{es:'🧭 ¿Cómo llego?',en:'🧭 How do I get there?'}, from:{es:'Desde',en:'From'}, to:{es:'Hasta',en:'To'},
+  search:{es:'Buscar ruta',en:'Find route'}, search2:{es:'Buscar',en:'Search'},
+  statusT:{es:'🚦 Estado de las líneas',en:'🚦 Line status'},
+  arrT:{es:'⏱️ Próximos trenes y buses',en:'⏱️ Next trains & buses'}, arrS:{es:'Escribe el nombre de una estación o parada.',en:'Type a station or stop name.'},
+  faresT:{es:'Tarifas 2026',en:'2026 fares'}, faresS:{es:'Con tarjeta contactless, celular u Oyster (mismo precio).',en:'With contactless card, phone or Oyster (same price).'},
+  faresNote:{es:'Fuente: TfL / Alcaldía de Londres. Tarifas del metro vigentes desde el 1 de marzo de 2026. Los topes diarios y semanales siguen congelados hasta marzo de 2027.',en:'Source: TfL / Mayor of London. Tube fares in force since 1 March 2026. Daily and weekly caps frozen until March 2027.'},
+  howT:{es:'Cómo funciona',en:'How it works'},
+  phrSub:{es:'Conversaciones de ejemplo. Toca 🔊 para escuchar la pronunciación británica.',en:'Sample dialogues. Tap 🔊 to hear British pronunciation.'},
+  playAll:{es:'▶ Todo',en:'▶ All'}, pocketT:{es:'Frases de bolsillo',en:'Pocket phrases'}, pocketS:{es:'Las que más vas a usar.',en:'The ones you will use most.'},
+  speedT:{es:'🐢 Velocidad de la voz',en:'🐢 Voice speed'},
+  sosSub:{es:'Toca para llamar. En el Reino Unido las llamadas a 999 y 111 son gratis.',en:'Tap to call. In the UK, calls to 999 and 111 are free.'},
+  c999:{es:'Emergencia: policía, ambulancia, bomberos',en:'Emergency: police, ambulance, fire'},
+  c111:{es:'NHS: salud urgente que no es emergencia',en:'NHS: urgent but not life-threatening'},
+  c101:{es:'Policía: denuncias que no son urgentes',en:'Police: non-emergency reports'},
+  sosNote:{es:'💡 Si no hablas inglés, al llamar di: <b>"Spanish, please"</b> — los servicios de emergencia tienen intérpretes.',en:'💡 If you don\'t speak English well, say <b>"Spanish, please"</b> — emergency services have interpreters.'},
+  orgsT:{es:'Te asesoran en español',en:'Advice in Spanish'}, orgsS:{es:'Organizaciones latinas y oficiales. Casi todo es gratis.',en:'Latin American and official organisations. Mostly free.'},
+  sitsT:{es:'¿Qué hago si…?',en:'What do I do if…?'},
+  back:{es:'Volver',en:'Back'}, firstSub:{es:'Marca lo que ya hiciste. Se guarda en tu celular.',en:'Tick what you have done. Saved on your phone.'},
+  visaT:{es:'Antes de viajar',en:'Before you travel'},
+  moneySub:{es:'Tasas en vivo. Úsalas como referencia: tu banco o casa de cambio cobra un margen.',en:'Live rates, for reference: your bank or exchange adds a margin.'},
+  amount:{es:'Cantidad',en:'Amount'}, wageT:{es:'Salario mínimo (21+ años)',en:'Minimum wage (21+)'},
+  wageS:{es:'Desde el 1 de abril de 2026. 18–20 años: £10.85/h.',en:'From 1 April 2026. Ages 18–20: £10.85/h.'},
+  tipsT:{es:'💡 Ahorra',en:'💡 Save money'},
+  cultSub:{es:'Lo que nadie te dice y te ahorra malos ratos.',en:'What nobody tells you.'},
+  slangT:{es:'Inglés de la calle',en:'Street English'}, slangS:{es:'Palabras que vas a oír todos los días.',en:'Words you will hear every day.'},
+  safeSub:{es:'Londres es segura en general, pero estos son los riesgos reales.',en:'London is generally safe, but these are the real risks.'},
+  mediaSub:{es:'Fotos reales de Wikimedia Commons. Toca una foto para verla en el mapa.',en:'Real photos from Wikimedia Commons. Tap one to see it on the map.'},
+  vidT:{es:'Videos',en:'Videos'}, vidS:{es:'Videos reales. Los de búsqueda abren YouTube con los más recientes.',en:'Real videos. Search links open YouTube with the latest ones.'},
+  vidCap:{es:'Video oficial de TfL: pagar el metro con tarjeta contactless (en inglés).',en:'Official TfL video: paying for the Tube with contactless.'},
+  footNote:{es:'Información de referencia, no es asesoría legal. Verifica trámites y tarifas en gov.uk y tfl.gov.uk. Datos de transporte: Powered by TfL Open Data. Mapa © OpenStreetMap, © CARTO. Fotos: Wikimedia Commons.',en:'Reference information, not legal advice. Check procedures and fares on gov.uk and tfl.gov.uk. Transport data: Powered by TfL Open Data. Map © OpenStreetMap, © CARTO. Photos: Wikimedia Commons.'},
+  updated:{es:'Actualizada',en:'Updated'},
+  nHome:{es:'Inicio',en:'Home'}, nMap:{es:'Mapa',en:'Map'}, nSos:{es:'SOS',en:'SOS'}, nTransit:{es:'Transporte',en:'Transport'}, nPhrases:{es:'Frases',en:'Phrases'},
+  installT:{es:'Instala la app en tu celular para usarla sin internet.',en:'Install the app on your phone to use it offline.'},
+  install:{es:'Instalar',en:'Install'}, tapClose:{es:'(Toca para cerrar)',en:'(Tap to close)'}
+};
+function applyLang(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-t]').forEach(el=>{ const k=el.dataset.t; if(T[k]) el.innerHTML = L(T[k]); });
+  document.getElementById('lang-es').classList.toggle('on',LANG==='es');
+  document.getElementById('lang-en').classList.toggle('on',LANG==='en');
+  const ph = {
+    'my-addr':{es:'Ej: 25 Coldharbour Lane, SW9 8PR',en:'e.g. 25 Coldharbour Lane, SW9 8PR'},
+    'j-from':{es:'Estación, lugar o código postal',en:'Station, place or postcode'},
+    'j-to':{es:'Ej: Elephant & Castle, Big Ben, SW9 8PR',en:'e.g. Elephant & Castle, Big Ben, SW9 8PR'},
+    'arr-q':{es:'Ej: Brixton, Oxford Circus',en:'e.g. Brixton, Oxford Circus'}
+  };
+  for(const id in ph){ const el=document.getElementById(id); if(el) el.placeholder=L(ph[id]); }
+}
+function setLang(l){ LANG=l; store.set('lang',l); applyLang(); renderAll(); }
+
+/* ---------- Helpers ---------- */
+const $ = (s)=>document.querySelector(s);
+const jsq = (s)=>String(s??'').replace(/['"\\<>&]/g,'');
+const esc = (s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2600); }
+async function getJSON(url){
+  const r = await fetch(url);
+  const j = await r.json().catch(()=>null);
+  return {ok:r.ok, status:r.status, data:j};
+}
+function tz(date, zone, opts){ return new Intl.DateTimeFormat(LANG==='es'?'es-CO':'en-GB',{timeZone:zone,...opts}).format(date); }
+
+/* ---------- Clocks (hora real) ---------- */
+function offsetMin(zone, d=new Date()){
+  const p = new Intl.DateTimeFormat('en-US',{timeZone:zone,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).formatToParts(d);
+  const g = k=>+p.find(x=>x.type===k).value;
+  return (Date.UTC(g('year'),g('month')-1,g('day'),g('hour'),g('minute')) - Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),d.getUTCHours(),d.getUTCMinutes()))/60000;
+}
+function tick(){
+  const d=new Date();
+  $('#clk-lon').textContent = tz(d,'Europe/London',{hour:'2-digit',minute:'2-digit'});
+  $('#clk-col').textContent = tz(d,'America/Bogota',{hour:'2-digit',minute:'2-digit'});
+  const h = (offsetMin('Europe/London',d)-offsetMin('America/Bogota',d))/60;
+  $('#clk-diff').textContent = LANG==='es' ? `Londres va ${h} h adelante` : `London is ${h} h ahead`;
+}
+
+/* ---------- Navigation ---------- */
+function go(v){
+  document.querySelectorAll('section.view').forEach(s=>s.classList.remove('on'));
+  $('#v-'+v).classList.add('on');
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  window.scrollTo({top:0,behavior:'instant'});
+  if(v==='map') initMap();
+  if(v==='transit' && !loadStatus._done){ loadStatus(); }
+  if(v==='media') loadGallery();
+  history.replaceState(null,'','#'+v);
+}
+
+/* ---------- Fares (verified Oct 2026) ---------- */
+const BUS_CHANGE = new Date('2026-11-01T04:30:00+00:00');
+function busFare(){ return new Date()>=BUS_CHANGE ? {f:'£1.85',cap:'£5.55'} : {f:'£1.75',cap:'£5.25'}; }
+function renderFares(){
+  const b=busFare(), after = new Date()>=BUS_CHANGE;
+  $('#fare-alert').innerHTML = after
+    ? L({es:'🚌 Desde el 1 de noviembre de 2026 el bus cuesta <b>£1.85</b> (Hopper: buses ilimitados durante 1 hora).',en:'🚌 Since 1 November 2026 a bus fare is <b>£1.85</b> (Hopper: unlimited buses for 1 hour).'})
+    : L({es:'🚌 El bus cuesta <b>£1.75</b> con buses ilimitados por 1 hora (Hopper). TfL anunció que sube a <b>£1.85</b> desde el <b>1 de noviembre de 2026</b>.',en:'🚌 A bus fare is <b>£1.75</b> with unlimited buses for 1 hour (Hopper). TfL announced it rises to <b>£1.85</b> from <b>1 November 2026</b>.'});
+  const rows = [
+    [{es:'Bus o tranvía (cualquier distancia)',en:'Bus or tram (any distance)'}, b.f],
+    [{es:'Tope diario solo bus',en:'Daily bus-only cap'}, b.cap],
+    [{es:'Metro zona 1 — hora pico',en:'Tube zone 1 — peak'}, '£3.10'],
+    [{es:'Metro zona 1 — fuera de pico y fines de semana',en:'Tube zone 1 — off-peak & weekends'}, '£3.00'],
+    [{es:'Tope diario zonas 1–2 (metro + bus)',en:'Daily cap zones 1–2 (Tube + bus)'}, '£8.90'],
+    [{es:'Tope semanal zonas 1–2 (lunes a domingo, solo contactless)',en:'Weekly cap zones 1–2 (Mon–Sun, contactless)'}, '£44.70'],
+    [{es:'Heathrow ↔ zona 1 por Piccadilly line',en:'Heathrow ↔ zone 1 via Piccadilly line'}, L({es:'desde £5.90',en:'from £5.90'})],
+    [{es:'Heathrow ↔ zona 1 por Elizabeth line',en:'Heathrow ↔ zone 1 via Elizabeth line'}, '£15.50'],
+    [{es:'Tiquete de papel (evítalo)',en:'Paper ticket (avoid)'}, '~£7']
+  ];
+  $('#fares-table').innerHTML = `<tr><th>${L({es:'Viaje',en:'Journey'})}</th><th style="text-align:right">${L({es:'Precio',en:'Price'})}</th></tr>` + rows.map(r=>`<tr><td>${L(r[0])}</td><td>${r[1]}</td></tr>`).join('');
+}
+
+/* ---------- How it works ---------- */
+const HOW = [
+  {t:{es:'💳 Paga con tu tarjeta o celular (contactless)',en:'💳 Pay with your card or phone (contactless)'},
+   b:{es:'<p>No necesitas comprar tiquete: toca el lector amarillo con tu tarjeta débito/crédito contactless, Apple Pay o Google Pay. Cobra lo mismo que la Oyster y aplica los topes diarios y semanales automáticamente.</p><ul class="dots mt"><li>Algunas tarjetas extranjeras cobran comisión por cada uso; una tarjeta tipo Wise, Revolut o una cuenta británica sale más barata.</li><li>Usa <b>siempre la misma</b> tarjeta o celular todo el día, o no te aplican el tope.</li><li>No pases la billetera completa: el lector puede cobrarle a otra tarjeta ("card clash").</li></ul>',
+      en:'<p>No ticket needed: tap the yellow reader with your contactless debit/credit card, Apple Pay or Google Pay. Same price as Oyster, with daily and weekly caps applied automatically.</p><ul class="dots mt"><li>Some foreign cards charge a fee per use; Wise, Revolut or a UK account is cheaper.</li><li>Always use the <b>same</b> card or phone all day, or caps won\'t apply.</li><li>Don\'t tap your whole wallet: the reader may charge another card ("card clash").</li></ul>'}},
+  {t:{es:'🟡 Toca al entrar y al salir',en:'🟡 Touch in and touch out'},
+   b:{es:'<p>En metro, Overground, DLR y Elizabeth line debes tocar <b>al entrar y al salir</b>. Si olvidas tocar al salir te cobran la tarifa máxima. En el bus solo tocas al subir.</p>',
+      en:'<p>On the Tube, Overground, DLR and Elizabeth line you must touch <b>in and out</b>. Forget to touch out and you pay the maximum fare. On buses, only touch in when boarding.</p>'}},
+  {t:{es:'🚌 El bus: Hopper y sin efectivo',en:'🚌 Buses: Hopper and no cash'},
+   b:{es:'<p>Los buses de Londres <b>no reciben efectivo</b>. Con el Hopper pagas un pasaje y puedes cambiar de bus las veces que quieras durante 1 hora. Los menores de 11 años viajan gratis. Para pedir parada oprime el botón rojo "STOP".</p>',
+      en:'<p>London buses <b>don\'t take cash</b>. With the Hopper you pay once and can change buses as often as you like within 1 hour. Under-11s travel free. Press the red "STOP" button to get off.</p>'}},
+  {t:{es:'⏰ Hora pico = más caro',en:'⏰ Peak time = more expensive'},
+   b:{es:'<p>En el metro la tarifa pico aplica de lunes a viernes (excepto festivos) de 6:30 a 9:30 y de 16:00 a 19:00. Fuera de esas horas y fines de semana es más barato.</p>',
+      en:'<p>Tube peak fares apply Monday to Friday (except bank holidays) 06:30–09:30 and 16:00–19:00. Off-peak and weekends are cheaper.</p>'}},
+  {t:{es:'🌙 Metro de noche y buses nocturnos',en:'🌙 Night Tube and night buses'},
+   b:{es:'<p>Viernes y sábado algunas líneas (Victoria, Jubilee, y partes de Central, Northern y Piccadilly) funcionan toda la noche. Los buses con la letra <b>N</b> (ej. N29) circulan de madrugada todos los días.</p>',
+      en:'<p>On Friday and Saturday some lines (Victoria, Jubilee, and parts of Central, Northern and Piccadilly) run all night. Buses starting with <b>N</b> (e.g. N29) run overnight every day.</p>'}},
+  {t:{es:'✈️ Del aeropuerto a la ciudad',en:'✈️ From the airport to the city'},
+   b:{es:'<ul class="dots"><li><b>Heathrow:</b> Piccadilly line (la más barata, ~1 hora) o Elizabeth line (más rápida). Las dos aceptan contactless.</li><li><b>Gatwick:</b> trenes Southern o Thameslink a Victoria o London Bridge (contactless sirve).</li><li><b>Stansted y Luton:</b> trenes o buses (National Express / easyBus) — compra por adelantado para ahorrar.</li><li>Evita taxis que te ofrezcan a la salida: usa solo los oficiales o apps.</li></ul>',
+      en:'<ul class="dots"><li><b>Heathrow:</b> Piccadilly line (cheapest, ~1 hour) or Elizabeth line (faster). Both take contactless.</li><li><b>Gatwick:</b> Southern or Thameslink trains to Victoria or London Bridge (contactless works).</li><li><b>Stansted & Luton:</b> trains or coaches — book ahead to save.</li><li>Ignore people offering taxis at arrivals: use official ranks or apps only.</li></ul>'}},
+  {t:{es:'📱 Apps recomendadas',en:'📱 Recommended apps'},
+   b:{es:'<ul class="dots"><li><b>TfL Go</b> (oficial): mapa del metro y horarios en vivo.</li><li><b>Citymapper</b> o <b>Google Maps</b>: rutas puerta a puerta.</li><li><a href="https://tfl.gov.uk/maps/track/tube" target="_blank" rel="noopener">Mapa oficial del metro (TfL)</a></li></ul>',
+      en:'<ul class="dots"><li><b>TfL Go</b> (official): Tube map and live times.</li><li><b>Citymapper</b> or <b>Google Maps</b>: door-to-door routes.</li><li><a href="https://tfl.gov.uk/maps/track/tube" target="_blank" rel="noopener">Official Tube map (TfL)</a></li></ul>'}}
+];
+function renderAcc(el, arr){ el.innerHTML = arr.map((x,i)=>`<details class="acc"${i===0?' open':''}><summary>${L(x.t)}</summary><div class="body">${L(x.b)}</div></details>`).join(''); }
+
+/* ---------- Line status ---------- */
+const LINE_COLORS = {bakerloo:'#B36305',central:'#E32017',circle:'#FFD300','district':'#00782A','hammersmith-city':'#F3A9BB',jubilee:'#A0A5A9',metropolitan:'#9B0056',northern:'#000000',piccadilly:'#003688',victoria:'#0098D4','waterloo-city':'#95CDBA','elizabeth':'#6950A1',dlr:'#00A4A7',liberty:'#61686B',lioness:'#FAA61A',mildmay:'#006FE6',suffragette:'#18A95D',weaver:'#9B0058',windrush:'#DC241F'};
+async function loadStatus(){
+  loadStatus._done = true;
+  const box=$('#status'); box.innerHTML='<span class="spin"></span>';
+  try{
+    const {ok,data} = await getJSON(TFL+'/Line/Mode/tube,elizabeth-line,dlr,overground/Status');
+    if(!ok||!Array.isArray(data)) throw 0;
+    box.innerHTML = data.map(l=>{
+      const s=l.lineStatuses?.[0]||{}; const good = s.statusSeverity===10;
+      const cls = good?'ok':(s.statusSeverity>=9?'warn':'red');
+      const txt = good ? L({es:'Servicio normal',en:'Good service'}) : (s.statusSeverityDescription||'');
+      return `<div class="st"><span class="bar" style="background:${LINE_COLORS[l.id]||'#888'}"></span><span class="nm">${esc(l.name)}</span><span class="pill ${cls}">${esc(txt)}</span></div>${!good&&s.reason?`<div class="small muted" style="padding:0 10px 6px">${esc(s.reason)}</div>`:''}`;
+    }).join('');
+  }catch(e){ box.innerHTML = `<p class="small muted">${L({es:'No se pudo cargar el estado. Revisa tu conexión.',en:'Could not load status. Check your connection.'})}</p>`; }
+}
+
+/* ---------- Journey planner ---------- */
+const MODE_IC = {walking:'🚶',bus:'🚌',tube:'🚇','elizabeth-line':'🟣',dlr:'🚈',overground:'🟠','national-rail':'🚆',tram:'🚊','river-bus':'⛴️',coach:'🚍','cable-car':'🚡'};
+function cleanQ(q){ q=q.trim(); const pc = q.replace(/\s+/g,'').toUpperCase(); return /^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$/.test(pc) ? pc : q; }
+async function planJourney(fromV, toV){
+  const out=$('#j-out');
+  let from = cleanQ(fromV||$('#j-from').value), to = cleanQ(toV||$('#j-to').value);
+  if(!from||!to){ toast(L({es:'Escribe origen y destino',en:'Enter origin and destination'})); return; }
+  out.innerHTML='<span class="spin"></span> '+L({es:'Buscando…',en:'Searching…'});
+  try{
+    let picked = [];
+    for(let i=0;i<3;i++){
+      const {status,data} = await getJSON(`${TFL}/Journey/JourneyResults/${encodeURIComponent(from)}/to/${encodeURIComponent(to)}?nationalSearch=false`);
+      if(status===300 && data){
+        const pick = (d)=>{ const o=(d?.disambiguationOptions||[]).sort((a,b)=>b.matchQuality-a.matchQuality)[0]; return o; };
+        let changed=false;
+        if(data.fromLocationDisambiguation?.matchStatus==='list'){ const o=pick(data.fromLocationDisambiguation); if(o){ from=o.parameterValue; picked.push(o.place.commonName); changed=true; } }
+        if(data.toLocationDisambiguation?.matchStatus==='list'){ const o=pick(data.toLocationDisambiguation); if(o){ to=o.parameterValue; picked.push(o.place.commonName); changed=true; } }
+        if(!changed) throw 'nf'; continue;
+      }
+      if(!data?.journeys?.length) throw 'nf';
+      out.innerHTML = (picked.length?`<p class="small muted">${L({es:'Entendí',en:'I understood'})}: ${picked.map(esc).join(' → ')}</p>`:'') +
+        data.journeys.slice(0,3).map((j,idx)=>{
+          const st = new Date(j.startDateTime), en = new Date(j.arrivalDateTime);
+          const hm = d=>d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+          const fare = j.fare?.totalCost ? ` · £${(j.fare.totalCost/100).toFixed(2)}` : '';
+          return `<details class="acc"${idx===0?' open':''}><summary>${j.duration} min · ${hm(st)}–${hm(en)}${fare}</summary><div class="body">${
+            j.legs.map(l=>`<div class="leg"><span class="md">${MODE_IC[l.mode?.id]||'➡️'}</span><div><b>${esc(l.instruction?.summary||'')}</b><div class="small muted">${l.duration} min${l.routeOptions?.[0]?.name?' · '+esc(l.routeOptions[0].name):''}</div></div></div>`).join('')
+          }</div></details>`;
+        }).join('') + `<p class="small muted">${L({es:'Horas en hora de Londres. Datos: TfL.',en:'Times in London time. Data: TfL.'})}</p>`;
+      return;
+    }
+    throw 'nf';
+  }catch(e){
+    out.innerHTML = `<div class="notice red">${L({es:'No encontré esa ruta. Prueba con el nombre de una estación (ej. "Brixton Underground Station") o un código postal (ej. SW9 8PR). Si estás fuera de Londres, la ruta no aplica.',en:'No route found. Try a station name (e.g. "Brixton Underground Station") or a postcode (e.g. SW9 8PR).'})}</div>`;
+  }
+}
+function getPos(){ return new Promise((res,rej)=>{ if(!navigator.geolocation) return rej(); navigator.geolocation.getCurrentPosition(p=>res(p.coords),rej,{enableHighAccuracy:true,timeout:12000}); }); }
+async function useMyLoc(id){ try{ const c=await getPos(); $('#'+id).value=`${c.latitude.toFixed(5)},${c.longitude.toFixed(5)}`; toast('📍 OK'); }catch(e){ toast(L({es:'Activa la ubicación del celular',en:'Turn on location'})); } }
+function fillHome(id){ const a=store.get('addr',''); if(!a){ toast(L({es:'Primero guarda tu dirección en Inicio',en:'Save your address on Home first'})); return;} $('#'+id).value=a; }
+
+/* ---------- Arrivals ---------- */
+async function searchStop(qv){
+  const q=(qv||$('#arr-q').value).trim(); const out=$('#arr-out');
+  if(!q) return; out.innerHTML='<span class="spin"></span>';
+  try{
+    const {data} = await getJSON(`${TFL}/StopPoint/Search/${encodeURIComponent(q)}?modes=tube,bus,dlr,overground,elizabeth-line,tram&maxResults=8`);
+    const m = data?.matches||[];
+    if(!m.length) throw 0;
+    out.innerHTML = m.map(s=>`<button class="btn sm ghost" style="margin:0 6px 6px 0" onclick="showArrivals('${jsq(s.id)}','${jsq(s.name)}')">${esc(s.name)}</button>`).join('') + '<div id="arr-list" class="mt"></div>';
+    if(m.length===1) showArrivals(m[0].id,m[0].name);
+  }catch(e){ out.innerHTML=`<p class="small muted">${L({es:'No encontré esa estación.',en:'Station not found.'})}</p>`; }
+}
+async function fetchArrivals(id){
+  let {data} = await getJSON(`${TFL}/StopPoint/${id}/Arrivals`);
+  if((!data||!data.length) && /^HUB|^9400/.test(id)){
+    const sp = (await getJSON(`${TFL}/StopPoint/${id}`)).data;
+    const kids = (sp?.children||[]).filter(c=>/^940|^910/.test(c.naptanId)).slice(0,3);
+    data = (await Promise.all(kids.map(c=>getJSON(`${TFL}/StopPoint/${c.naptanId}/Arrivals`).then(r=>r.data||[])))).flat();
+  }
+  return (data||[]).sort((a,b)=>a.timeToStation-b.timeToStation);
+}
+async function showArrivals(id,name,target){
+  const box = target || $('#arr-list') || $('#arr-out');
+  box.innerHTML='<span class="spin"></span>';
+  try{
+    const arr = await fetchArrivals(id);
+    if(!arr.length){ box.innerHTML=`<p class="small muted">${L({es:'Sin llegadas en este momento.',en:'No arrivals right now.'})}</p>`; return; }
+    box.innerHTML = `<h3 style="margin-bottom:4px">${esc(name)}</h3>` + arr.slice(0,10).map(a=>{
+      const min=Math.round(a.timeToStation/60);
+      return `<div class="arr"><div><b>${esc(a.lineName)}</b> → ${esc(a.destinationName||a.towards||'')}<div class="small muted">${esc(a.platformName||'')}</div></div><b class="min">${min<1?L({es:'Ya',en:'Due'}):min+' min'}</b></div>`;
+    }).join('') + `<p class="small muted mt">Powered by TfL Open Data</p>`;
+  }catch(e){ box.innerHTML=`<p class="small muted">${L({es:'Error al cargar llegadas.',en:'Error loading arrivals.'})}</p>`; }
+}
+
+/* ---------- Places (verified addresses) ---------- */
+const CATS = {
+  help:{ic:'🤝',c:'#EB0A1E',n:{es:'Ayuda',en:'Help'}},
+  health:{ic:'🏥',c:'#0067B1',n:{es:'Urgencias',en:'A&E'}},
+  latino:{ic:'🫓',c:'#F2A900',n:{es:'Barrios latinos',en:'Latin areas'}},
+  sights:{ic:'📸',c:'#0B0B0C',n:{es:'Lugares',en:'Sights'}},
+  air:{ic:'✈️',c:'#6E6E76',n:{es:'Aeropuertos',en:'Airports'}}
+};
+const PLACES = [
+  {cat:'help',n:'Consulado de Colombia',lat:51.5208,lng:-0.1449,a:'Westcott House, 35 Portland Place, London W1B 1AE',tel:'+442076379893',web:'https://londres.consulado.gov.co',d:{es:'Trámites para colombianos (pasaporte, registro civil, poderes). Con cita previa. Línea gratis de asistencia: 0808 234 2176.',en:'Services for Colombian nationals. By appointment. Free assistance line: 0808 234 2176.'}},
+  {cat:'help',n:'Latin American House (Casa Latina)',lat:51.5413,lng:-0.1947,a:'10 Kingsgate Place, London NW6 4TA',tel:'+442073728653',web:'https://casalatina.org.uk',d:{es:'Asesoría legal y social en español (vivienda, beneficios, empleo, inmigración), cursos de inglés e informática. Kilburn.',en:'Legal and social advice in Spanish, English and IT courses. Kilburn.'}},
+  {cat:'help',n:'IRMO',lat:51.4697,lng:-0.1108,a:'Unit 9, Warwick House, Overton Road, London SW9 7JP',tel:'+442077339977',web:'https://irmo.org.uk',d:{es:'Asesoría en inmigración, vivienda, beneficios y salud; clases de inglés, empleo y programas para niños y jóvenes. Brixton.',en:'Advice on immigration, housing, benefits and health; English classes, employment and youth programmes. Brixton.'}},
+  {cat:'help',n:'LAWRS — Derechos de la mujer latina',lat:51.5244,lng:-0.0882,a:'52-54 Featherstone Street, London EC1Y 8RT',tel:'+448081454909',web:'https://lawrs.org.uk',d:{es:'Para mujeres latinoamericanas: asesoría gratuita y confidencial en vivienda, deudas, empleo, violencia de género. Línea en español: lun–vie 11:00–13:00.',en:'For Latin American women: free confidential advice on housing, debt, employment and gender violence.'}},
+  {cat:'health',n:"St Thomas' Hospital (A&E)",lat:51.4986,lng:-0.1181,a:'Westminster Bridge Road, London SE1 7EH',d:{es:'Urgencias 24 horas, frente al Big Ben.',en:'24h emergency department, opposite Big Ben.'}},
+  {cat:'health',n:'University College Hospital (A&E)',lat:51.5246,lng:-0.1357,a:'235 Euston Road, London NW1 2BU',d:{es:'Urgencias 24 horas, centro de Londres.',en:'24h emergency department, central London.'}},
+  {cat:'health',n:"King's College Hospital (A&E)",lat:51.4682,lng:-0.0938,a:'Denmark Hill, London SE5 9RS',d:{es:'Urgencias 24 horas, sur de Londres (cerca de Brixton y Camberwell).',en:'24h emergency department, south London.'}},
+  {cat:'health',n:'Royal London Hospital (A&E)',lat:51.5185,lng:-0.0597,a:'Whitechapel Road, London E1 1FR',d:{es:'Urgencias 24 horas, este de Londres.',en:'24h emergency department, east London.'}},
+  {cat:'health',n:"St Mary's Hospital (A&E)",lat:51.5171,lng:-0.1738,a:'Praed Street, London W2 1NY',d:{es:'Urgencias 24 horas, Paddington (oeste).',en:'24h emergency department, Paddington.'}},
+  {cat:'latino',n:'Elephant & Castle',lat:51.4946,lng:-0.1003,d:{es:'Corazón histórico de la comunidad latina: restaurantes, envíos de dinero, tiendas colombianas y ecuatorianas.',en:'Historic heart of the Latin community: restaurants, money transfer and Colombian shops.'}},
+  {cat:'latino',n:'Brixton Market & Brixton Village',lat:51.4625,lng:-0.1129,d:{es:'Mercado multicultural con productos latinos, carnicerías y comida de toda Sudamérica.',en:'Multicultural market with Latin produce and food.'}},
+  {cat:'latino',n:'Seven Sisters',lat:51.5822,lng:-0.0749,d:{es:'Zona del norte con muchos negocios latinos y colombianos.',en:'North London area with many Latin businesses.'}},
+  {cat:'latino',n:'Kilburn',lat:51.5472,lng:-0.1919,d:{es:'Casa Latina y una comunidad hispanohablante activa.',en:'Home of Latin American House.'}},
+  {cat:'sights',n:'Big Ben',w:'Big_Ben',lat:51.5007,lng:-0.1246,d:{es:'Torre del reloj del Parlamento.',en:'The Parliament clock tower.'}},
+  {cat:'sights',n:'Tower Bridge',w:'Tower_Bridge',lat:51.5055,lng:-0.0754,d:{es:'El puente más famoso de Londres.',en:'London\'s most famous bridge.'}},
+  {cat:'sights',n:'London Eye',w:'London_Eye',lat:51.5033,lng:-0.1196,d:{es:'La gran rueda a orillas del Támesis.',en:'The giant wheel on the Thames.'}},
+  {cat:'sights',n:'Buckingham Palace',w:'Buckingham_Palace',lat:51.5014,lng:-0.1419,d:{es:'Residencia del rey. Cambio de guardia en algunas mañanas.',en:'The King\'s residence.'}},
+  {cat:'sights',n:'British Museum',w:'British_Museum',lat:51.5194,lng:-0.1270,d:{es:'Museo gratuito con historia de todo el mundo.',en:'Free museum of world history.'}},
+  {cat:'sights',n:'Natural History Museum',w:'Natural_History_Museum,_London',lat:51.4967,lng:-0.1764,d:{es:'Gratis. Dinosaurios — ideal para niños.',en:'Free. Dinosaurs — great for kids.'}},
+  {cat:'sights',n:'Trafalgar Square',w:'Trafalgar_Square',lat:51.5080,lng:-0.1281,d:{es:'Plaza central y la National Gallery (gratis).',en:'Central square and the free National Gallery.'}},
+  {cat:'sights',n:'Camden Market',w:'Camden_Market',lat:51.5413,lng:-0.1463,d:{es:'Mercado alternativo con comida de todo el mundo.',en:'Alternative market with world food.'}},
+  {cat:'sights',n:'Hyde Park',w:'Hyde_Park,_London',lat:51.5073,lng:-0.1657,d:{es:'Parque gigante en el centro.',en:'Huge central park.'}},
+  {cat:'air',n:'Heathrow',w:'Heathrow_Airport',lat:51.4700,lng:-0.4543,d:{es:'Aeropuerto principal (vuelos desde Bogotá). Piccadilly o Elizabeth line al centro.',en:'Main airport. Piccadilly or Elizabeth line to the centre.'}},
+  {cat:'air',n:'Gatwick',lat:51.1537,lng:-0.1821,d:{es:'Al sur. Tren a Victoria o London Bridge.',en:'South. Train to Victoria or London Bridge.'}},
+  {cat:'air',n:'Stansted',lat:51.8860,lng:0.2389,d:{es:'Al noreste. Vuelos baratos por Europa.',en:'North-east. Budget European flights.'}},
+  {cat:'air',n:'Luton',lat:51.8747,lng:-0.3683,d:{es:'Al norte. Vuelos baratos por Europa.',en:'North. Budget European flights.'}}
+];
+
+/* ---------- Map ---------- */
+let map, layers={}, activeCats=new Set(Object.keys(CATS)), meMarker, stopsLayer, linesLayer, linesOn=false;
+function pinIcon(c,ic){ return L_.divIcon({className:'',html:`<div class="pin" style="background:${c}"><span>${ic}</span></div>`,iconSize:[30,30],iconAnchor:[15,30],popupAnchor:[0,-28]}); }
+const L_ = window.L;
+function initMap(){
+  if(map){ setTimeout(()=>map.invalidateSize(),100); return; }
+  if(!L_){ $('#map').innerHTML='<p class="small muted" style="padding:20px">Mapa no disponible sin conexión.</p>'; return; }
+  map = L_.map('map',{zoomControl:true}).setView([51.507,-0.1278],12);
+  L_.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'© OpenStreetMap © CARTO'}).addTo(map);
+  for(const k in CATS){ layers[k]=L_.layerGroup().addTo(map); }
+  PLACES.forEach(p=>{
+    const c=CATS[p.cat];
+    const html = `<b>${esc(p.n)}</b><br><span>${esc(L(p.d))}</span>${p.a?`<br><small>${esc(p.a)}</small>`:''}<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${p.tel?`<a class="btn sm red" style="color:#fff" href="tel:${p.tel}">📞 ${L({es:'Llamar',en:'Call'})}</a>`:''}${p.web?`<a class="btn sm" style="color:#fff" href="${p.web}" target="_blank" rel="noopener">🌐 Web</a>`:''}<a class="btn sm ghost" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" rel="noopener">🧭 ${L({es:'Cómo llegar',en:'Directions'})}</a></div>`;
+    L_.marker([p.lat,p.lng],{icon:pinIcon(c.c,c.ic)}).bindPopup(html).addTo(layers[p.cat]);
+  });
+  stopsLayer = L_.layerGroup().addTo(map);
+  renderChips();
+  setTimeout(()=>map.invalidateSize(),150);
+}
+function renderChips(){
+  $('#map-chips').innerHTML = Object.entries(CATS).map(([k,c])=>`<button class="chip ${activeCats.has(k)?'on':''}" onclick="toggleCat('${k}')">${c.ic} ${L(c.n)}</button>`).join('');
+}
+function toggleCat(k){ if(activeCats.has(k)){activeCats.delete(k); map.removeLayer(layers[k]);} else {activeCats.add(k); map.addLayer(layers[k]);} renderChips(); }
+async function locateMe(){
+  initMap();
+  try{ const c=await getPos(); const ll=[c.latitude,c.longitude];
+    if(meMarker) meMarker.setLatLng(ll); else meMarker=L_.circleMarker(ll,{radius:9,color:'#fff',weight:3,fillColor:'#0A84FF',fillOpacity:1}).addTo(map).bindPopup(L({es:'Estás aquí',en:'You are here'}));
+    map.setView(ll,16); meMarker.openPopup(); return c;
+  }catch(e){ toast(L({es:'No pude obtener tu ubicación. Activa el GPS y da permiso.',en:'Could not get your location. Enable GPS and allow access.'})); return null; }
+}
+async function nearbyStops(){
+  const c = await locateMe(); if(!c) return;
+  const info=$('#map-info'); info.innerHTML='<span class="spin"></span>';
+  try{
+    const {data} = await getJSON(`${TFL}/StopPoint?lat=${c.latitude}&lon=${c.longitude}&stopTypes=NaptanMetroStation,NaptanRailStation,NaptanPublicBusCoachTram&radius=500`);
+    const sps = data?.stopPoints||[];
+    stopsLayer.clearLayers();
+    if(!sps.length){ info.innerHTML=`<p class="small muted">${L({es:'No hay paradas de TfL a menos de 500 m (¿estás en Londres?).',en:'No TfL stops within 500 m (are you in London?).'})}</p>`; return; }
+    sps.slice(0,25).forEach(s=>{
+      const isRail = /Metro|Rail/.test(s.stopType);
+      const lines=(s.lines||[]).map(l=>l.name).slice(0,6).join(', ');
+      L_.marker([s.lat,s.lon],{icon:pinIcon(isRail?'#003688':'#EB0A1E',isRail?'🚇':'🚌')}).addTo(stopsLayer)
+        .bindPopup(`<b>${esc(s.commonName)}${s.indicator&&!isRail?' ('+esc(s.indicator)+')':''}</b><br><small>${esc(lines)}</small><br><button class="btn sm red mt" onclick="showArrivals('${s.naptanId}','${jsq(s.commonName)}',document.getElementById('map-info'))">⏱️ ${L({es:'Ver llegadas',en:'Arrivals'})}</button>`);
+    });
+    info.innerHTML=`<p class="small muted">${sps.length} ${L({es:'paradas cerca. Toca una para ver llegadas en vivo.',en:'stops nearby. Tap one for live arrivals.'})}</p>`;
+  }catch(e){ info.innerHTML=`<p class="small muted">${L({es:'Error consultando TfL.',en:'TfL request failed.'})}</p>`; }
+}
+async function toggleTubeLines(){
+  initMap();
+  if(linesOn){ map.removeLayer(linesLayer); linesOn=false; return; }
+  if(linesLayer){ map.addLayer(linesLayer); linesOn=true; return; }
+  const btn=$('#btn-lines'); btn.disabled=true; const old=btn.innerHTML; btn.innerHTML='<span class="spin"></span>';
+  linesLayer=L_.layerGroup().addTo(map); linesOn=true;
+  const ids=['bakerloo','central','circle','district','hammersmith-city','jubilee','metropolitan','northern','piccadilly','victoria','waterloo-city','elizabeth'];
+  await Promise.all(ids.map(async id=>{
+    try{
+      const {data}=await getJSON(`${TFL}/Line/${id}/Route/Sequence/all?excludeCrowding=true`);
+      (data?.lineStrings||[]).forEach(ls=>{ JSON.parse(ls).forEach(seg=>{ L_.polyline(seg.map(p=>[p[1],p[0]]),{color:LINE_COLORS[id]||'#333',weight:4,opacity:.85}).addTo(linesLayer).bindTooltip(data.lineName); }); });
+      const seen=new Set();
+      (data?.stopPointSequences||[]).forEach(sq=>sq.stopPoint.forEach(s=>{ if(seen.has(s.id))return; seen.add(s.id);
+        L_.circleMarker([s.lat,s.lon],{radius:3.5,color:'#000',weight:1.5,fillColor:'#fff',fillOpacity:1}).addTo(linesLayer)
+          .bindPopup(`<b>${esc(s.name)}</b><br><small>${esc(data.lineName)}</small><br><button class="btn sm red mt" onclick="showArrivals('${s.id}','${jsq(s.name)}',document.getElementById('map-info'))">⏱️ ${L({es:'Ver llegadas',en:'Arrivals'})}</button>`);
+      }));
+    }catch(e){}
+  }));
+  btn.disabled=false; btn.innerHTML=old;
+}
+
+/* ---------- Phrases ---------- */
+const SITS = [
+ {id:'border',ic:'🛂',n:{es:'Migración en el aeropuerto',en:'Border control'},ctx:{es:'Llegada a Heathrow. Ten a mano pasaporte, visa/eVisa, dirección donde te quedas y tiquete de regreso.',en:'Arrival at Heathrow. Have passport, visa, address and return ticket ready.'},
+  l:[['A','Good morning. Passport, please.','Buenos días. Pasaporte, por favor.','gud MOR-ning. PAS-port, pliis'],
+     ['B','Good morning. Here you are.','Buenos días. Aquí tiene.','gud MOR-ning. JIR iu ar'],
+     ['A','What\'s the purpose of your visit?','¿Cuál es el propósito de su visita?','uots de PUR-pos ov ior VI-sit'],
+     ['B','I\'m visiting my family. I\'ll stay for three weeks.','Vengo a visitar a mi familia. Me quedo tres semanas.','aim VI-si-ting mai FA-mi-li. ail stei for zrii uiiks'],
+     ['A','Where will you be staying?','¿Dónde se va a quedar?','uer uil iu bi STEI-ing'],
+     ['B','At my sister-in-law\'s house. This is the address.','En la casa de mi cuñada. Esta es la dirección.','at mai SIS-ter in loos jaus. dis is di a-DRES'],
+     ['A','Do you have a return ticket?','¿Tiene tiquete de regreso?','du iu jav a ri-TERN TI-ket'],
+     ['B','Yes, here it is. I fly back on the 20th.','Sí, aquí está. Regreso el 20.','ies, jir it is. ai flai bak on de TUEN-ti-iz']],
+  tip:{es:'Responde corto y con la verdad. Nunca digas que vas a "trabajar" si entras como visitante.',en:'Keep answers short and truthful.'}},
+ {id:'tube',ic:'🚇',n:{es:'En la estación del metro',en:'At the Tube station'},ctx:{es:'Preguntando cómo llegar y qué línea tomar.',en:'Asking which line to take.'},
+  l:[['B','Excuse me, how do I get to Oxford Circus?','Disculpe, ¿cómo llego a Oxford Circus?','eks-KIUS mi, jau du ai get tu OKS-ford SIR-kus'],
+     ['A','Take the Victoria line northbound. It\'s four stops.','Tome la línea Victoria dirección norte. Son cuatro paradas.','teik de vik-TO-ria lain NORZ-baund. its for stops'],
+     ['B','Which platform is it?','¿Qué andén es?','uich PLAT-form is it'],
+     ['A','Platform 2, down the escalator on the left.','Andén 2, bajando la escalera eléctrica a la izquierda.','PLAT-form tu, daun de ES-ka-lei-tor on de left'],
+     ['B','Can I pay with my card?','¿Puedo pagar con mi tarjeta?','kan ai pei uiz mai kard'],
+     ['A','Yes, just tap it on the yellow reader.','Sí, solo tóquela en el lector amarillo.','ies, yast tap it on de IE-lou RII-der'],
+     ['B','Thank you so much!','¡Muchas gracias!','zank iu sou mach']],
+  tip:{es:'"Northbound / Southbound / Eastbound / Westbound" = dirección norte, sur, este, oeste. "Mind the gap" = cuidado con el espacio entre el tren y el andén.',en:'Learn the "-bound" directions.'}},
+ {id:'lost',ic:'🧭',n:{es:'Estoy perdido',en:'I\'m lost'},ctx:{es:'Pedir ayuda en la calle.',en:'Asking for directions in the street.'},
+  l:[['B','Sorry to bother you. I think I\'m lost.','Perdón la molestia. Creo que estoy perdido.','SO-ri tu BO-der iu. ai zink aim lost'],
+     ['A','No worries. Where are you trying to go?','Tranquilo. ¿A dónde quiere ir?','nou UO-ris. uer ar iu TRAI-ing tu gou'],
+     ['B','To this address. Is it far from here?','A esta dirección. ¿Queda lejos?','tu dis a-DRES. is it far from jir'],
+     ['A','About ten minutes\' walk. Go straight on and turn right at the lights.','Como diez minutos caminando. Siga derecho y gire a la derecha en el semáforo.','a-BAUT ten MI-nits uok. gou streit on and tern rait at de laits'],
+     ['B','Could you show me on the map, please?','¿Me lo puede mostrar en el mapa, por favor?','kud iu shou mi on de map, pliis'],
+     ['A','Sure. You\'re here, and it\'s just there.','Claro. Usted está aquí y es justo ahí.','shur. ior jir, and its yast der']],
+  tip:{es:'Los policías y el personal de TfL (chaleco o uniforme) son las personas más seguras para pedir ayuda.',en:'Police and TfL staff are the safest people to ask.'}},
+ {id:'bus',ic:'🚌',n:{es:'En el bus',en:'On the bus'},ctx:{es:'Confirmando la ruta con el conductor.',en:'Checking the route with the driver.'},
+  l:[['B','Does this bus go to Elephant and Castle?','¿Este bus va a Elephant and Castle?','das dis bas gou tu E-le-fant and KA-sel'],
+     ['A','Yes, mate. Tap your card there.','Sí, amigo. Toque su tarjeta ahí.','ies, meit. tap ior kard der'],
+     ['B','Could you tell me when we get there?','¿Me avisa cuando lleguemos?','kud iu tel mi uen ui get der'],
+     ['A','It\'s on the screen, but I\'ll give you a shout.','Sale en la pantalla, pero yo le aviso.','its on de skriin, bat ail giv iu a shaut'],
+     ['B','Cheers!','¡Gracias!','chirs']],
+  tip:{es:'"Mate" = amigo; "Cheers" = gracias (muy común). La próxima parada aparece en la pantalla y se anuncia en voz.',en:'"Cheers" means thanks.'}},
+ {id:'food',ic:'🍽️',n:{es:'Restaurante o café',en:'Restaurant or café'},ctx:{es:'Pedir comida y la cuenta.',en:'Ordering and paying.'},
+  l:[['A','Hi there, are you ready to order?','Hola, ¿ya va a pedir?','jai der, ar iu RE-di tu OR-der'],
+     ['B','Yes. Could I have the chicken, please?','Sí. ¿Me da el pollo, por favor?','ies. kud ai jav de CHI-ken, pliis'],
+     ['A','Anything to drink?','¿Algo de tomar?','E-ni-zing tu drink'],
+     ['B','Just tap water, please.','Solo agua de la llave, por favor.','yast tap UO-ter, pliis'],
+     ['B','Could we have the bill, please?','¿Nos trae la cuenta, por favor?','kud ui jav de bil, pliis'],
+     ['A','Of course. Card or cash?','Claro. ¿Tarjeta o efectivo?','ov kors. kard or kash'],
+     ['B','Card, please. Is service included?','Tarjeta. ¿El servicio está incluido?','kard, pliis. is SER-vis in-KLU-ded']],
+  tip:{es:'El agua de la llave ("tap water") es gratis y potable. Muchos restaurantes ya suman 12,5% de servicio: revisa antes de dejar propina.',en:'Tap water is free. Check for a service charge before tipping.'}},
+ {id:'shop',ic:'🛒',n:{es:'Supermercado',en:'Supermarket'},ctx:{es:'Buscar productos y pagar.',en:'Finding items and paying.'},
+  l:[['B','Excuse me, where can I find the rice?','Disculpe, ¿dónde encuentro el arroz?','eks-KIUS mi, uer kan ai faind de rais'],
+     ['A','Aisle five, next to the pasta.','Pasillo cinco, al lado de la pasta.','ail faiv, nekst tu de PAS-ta'],
+     ['A','Do you need a bag?','¿Necesita bolsa?','du iu niid a bag'],
+     ['B','No thanks, I\'ve got one.','No gracias, tengo una.','nou zanks, aiv got uan'],
+     ['A','Have you got a Clubcard?','¿Tiene tarjeta de puntos?','jav iu got a KLAB-kard']],
+  tip:{es:'Las bolsas se cobran: lleva la tuya. Las tarjetas de fidelidad (Tesco Clubcard, Sainsbury\'s Nectar) son gratis y dan buenos descuentos.',en:'Bags cost money. Loyalty cards are free and give discounts.'}},
+ {id:'pharm',ic:'💊',n:{es:'Farmacia',en:'Pharmacy'},ctx:{es:'Para malestares leves el farmaceuta te puede aconsejar sin cita.',en:'Pharmacists can advise on minor illnesses.'},
+  l:[['B','Hello. I have a sore throat and a fever.','Hola. Tengo dolor de garganta y fiebre.','je-LOU. ai jav a sor zrout and a FII-ver'],
+     ['A','How long have you had it?','¿Hace cuánto lo tiene?','jau long jav iu jad it'],
+     ['B','Since yesterday.','Desde ayer.','sins IES-ter-dei'],
+     ['A','Are you allergic to anything?','¿Es alérgico a algo?','ar iu a-LER-yik tu E-ni-zing'],
+     ['B','I\'m allergic to penicillin.','Soy alérgico a la penicilina.','aim a-LER-yik tu pe-ni-SI-lin'],
+     ['A','Take these paracetamol. If it gets worse, call 111.','Tome este paracetamol. Si empeora, llame al 111.','teik diis pa-ra-SII-ta-mol. if it gets uors, kol uan uan uan']],
+  tip:{es:'Paracetamol e ibuprofeno se compran sin receta en farmacias como Boots o Superdrug.',en:'Paracetamol and ibuprofen are sold over the counter.'}},
+ {id:'gp',ic:'🩺',n:{es:'Registrarse con un médico (GP)',en:'Registering with a GP'},ctx:{es:'Cualquier persona en Inglaterra puede registrarse con un médico general (GP) sin pagar. No es obligatorio mostrar prueba de dirección ni de estatus migratorio.',en:'Anyone in England can register with a GP for free.'},
+  l:[['B','Hi, I\'d like to register with the practice.','Hola, quisiera registrarme en este consultorio.','jai, aid laik tu RE-yis-ter uiz de PRAK-tis'],
+     ['A','Sure. Please fill in this form.','Claro. Por favor llene este formulario.','shur. pliis fil in dis form'],
+     ['B','Do I need proof of address?','¿Necesito comprobante de dirección?','du ai niid pruuf ov a-DRES'],
+     ['A','It helps, but it\'s not required.','Ayuda, pero no es obligatorio.','it jelps, bat its not ri-KUAI-erd'],
+     ['B','Can I have an interpreter for my appointment?','¿Me pueden dar un intérprete para la cita?','kan ai jav an in-TER-pri-ter for mai a-POINT-ment'],
+     ['A','Yes, we can book one for you. It\'s free.','Sí, le reservamos uno. Es gratis.','ies, ui kan buk uan for iu. its frii']],
+  tip:{es:'Pide intérprete: el NHS lo da gratis. Si un consultorio te niega el registro, llama al 111 o pide ayuda en IRMO.',en:'Ask for a free interpreter.'}},
+ {id:'emerg',ic:'🚑',n:{es:'Llamada al 999',en:'Calling 999'},ctx:{es:'Habla despacio y di primero dónde estás.',en:'Speak slowly and say where you are first.'},
+  l:[['A','Emergency, which service?','Emergencias, ¿qué servicio necesita?','i-MER-yen-si, uich SER-vis'],
+     ['B','Ambulance, please. Spanish interpreter, please.','Ambulancia, por favor. Intérprete de español.','AM-biu-lans, pliis. SPA-nish in-TER-pri-ter, pliis'],
+     ['A','What\'s the address?','¿Cuál es la dirección?','uots di a-DRES'],
+     ['B','I\'m at Brixton station, outside the main entrance.','Estoy en la estación de Brixton, afuera de la entrada principal.','aim at BRIKS-ton STEI-shon, aut-SAID de mein EN-trans'],
+     ['A','Is the person breathing?','¿La persona está respirando?','is de PER-son BRII-zing'],
+     ['B','Yes, but she\'s unconscious.','Sí, pero está inconsciente.','ies, bat shiis an-KON-shos']],
+  tip:{es:'Si no sabes la dirección, di la estación, una tienda o una calle cercana. "What3words" también ayuda a la ambulancia a ubicarte.',en:'Use nearby landmarks if unsure.'}},
+ {id:'police',ic:'👮',n:{es:'Denunciar un robo',en:'Reporting a theft'},ctx:{es:'Necesitarás el número de denuncia ("crime reference number") para el seguro o el consulado.',en:'You\'ll need a crime reference number.'},
+  l:[['B','I\'d like to report a theft. Someone stole my phone.','Quiero denunciar un robo. Me robaron el celular.','aid laik tu ri-PORT a zeft. SAM-uan stoul mai foun'],
+     ['A','Where and when did it happen?','¿Dónde y cuándo pasó?','uer and uen did it JA-pen'],
+     ['B','On Oxford Street, about an hour ago.','En Oxford Street, hace como una hora.','on OKS-ford striit, a-BAUT an AU-er a-GOU'],
+     ['A','Can you describe the person?','¿Puede describir a la persona?','kan iu dis-KRAIB de PER-son'],
+     ['B','A young man on a bike, wearing a black hoodie.','Un joven en bicicleta, con buzo negro con capucha.','a iang man on a baik, UE-ring a blak JU-di'],
+     ['B','Could I have a crime reference number?','¿Me da el número de denuncia?','kud ai jav a kraim RE-fe-rens NAM-ber']],
+  tip:{es:'Para robos que no son urgentes llama al 101 o denuncia en línea en met.police.uk.',en:'Non-urgent: call 101 or report online.'}},
+ {id:'rent',ic:'🏠',n:{es:'Alquilar una habitación',en:'Renting a room'},ctx:{es:'Nunca pagues depósito sin ver el lugar y sin contrato.',en:'Never pay a deposit before viewing.'},
+  l:[['B','Hi, I\'m calling about the room on SpareRoom. Is it still available?','Hola, llamo por la habitación de SpareRoom. ¿Sigue disponible?','jai, aim KO-ling a-BAUT de ruum on SPER-ruum. is it stil a-VEI-la-bol'],
+     ['A','Yes, it is. It\'s £850 a month, bills included.','Sí. Son £850 al mes, servicios incluidos.','ies it is. its eit JAN-dred and FIF-ti paunds a manz, bils in-KLU-ded'],
+     ['B','Can I come and see it?','¿Puedo ir a verla?','kan ai kam and sii it'],
+     ['B','How much is the deposit, and is it protected?','¿Cuánto es el depósito y está protegido?','jau mach is de di-PO-sit, and is it pro-TEK-ted'],
+     ['A','Five weeks\' rent, in a deposit scheme.','Cinco semanas de arriendo, en un sistema de protección.','faiv uiiks rent, in a di-PO-sit skiim'],
+     ['B','Will I get a written contract?','¿Me dan contrato por escrito?','uil ai get a RI-ten KON-trakt']],
+  tip:{es:'Por ley el depósito máximo suele ser 5 semanas de arriendo y debe ir a un "deposit protection scheme". Si te piden más o en efectivo sin recibo, desconfía.',en:'Deposits are usually capped at 5 weeks and must be protected.'}},
+ {id:'job',ic:'💼',n:{es:'Entrevista de trabajo',en:'Job interview'},ctx:{es:'Para trabajar necesitas permiso de trabajo y número de seguro social (NI number).',en:'You need the right to work.'},
+  l:[['A','Tell me a bit about yourself.','Cuénteme un poco sobre usted.','tel mi a bit a-BAUT ior-SELF'],
+     ['B','I\'m from Colombia. I have five years\' experience in sales.','Soy de Colombia. Tengo cinco años de experiencia en ventas.','aim from ko-LOM-bia. ai jav faiv iirs eks-PI-riens in seils'],
+     ['A','Do you have the right to work in the UK?','¿Tiene permiso para trabajar en el Reino Unido?','du iu jav de rait tu uork in de iu-KEI'],
+     ['B','Yes, I can share my share code.','Sí, le puedo compartir mi "share code".','ies, ai kan sher mai sher koud'],
+     ['A','When can you start?','¿Cuándo puede empezar?','uen kan iu start'],
+     ['B','I can start next Monday.','Puedo empezar el próximo lunes.','ai kan start nekst MAN-dei']],
+  tip:{es:'El salario mínimo desde abril de 2026 es £12.71 por hora (21+ años). Si te pagan menos o te retienen el pasaporte, llama a ACAS o a la línea contra la esclavitud moderna (ver SOS).',en:'Minimum wage is £12.71/h (21+).'}},
+ {id:'bank',ic:'🏦',n:{es:'Abrir cuenta de banco',en:'Opening a bank account'},ctx:{es:'Bancos digitales como Monzo, Starling, Revolut o Wise suelen ser más fáciles para recién llegados.',en:'Digital banks are easier for newcomers.'},
+  l:[['B','I\'d like to open a current account.','Quisiera abrir una cuenta corriente.','aid laik tu OU-pen a KA-rent a-KAUNT'],
+     ['A','Can I see your passport and proof of address?','¿Me muestra su pasaporte y comprobante de dirección?','kan ai sii ior PAS-port and pruuf ov a-DRES'],
+     ['B','Is there a monthly fee?','¿Tiene cuota mensual?','is der a MANZ-li fii'],
+     ['A','No, the basic account is free.','No, la cuenta básica es gratis.','nou, de BEI-sik a-KAUNT is frii']],
+  tip:{es:'Para enviar plata a Colombia compara Wise, Remitly y casas de cambio de Elephant & Castle: la diferencia en la tasa puede ser grande.',en:'Compare transfer services.'}},
+ {id:'chat',ic:'☕',n:{es:'Charla con vecinos',en:'Small talk'},ctx:{es:'Hablar del clima es el deporte nacional.',en:'Weather is the national sport.'},
+  l:[['A','Lovely weather today, isn\'t it?','Qué buen día hace, ¿no?','LAV-li UE-der tu-DEI, I-sent it'],
+     ['B','Yes! Much better than yesterday.','¡Sí! Mucho mejor que ayer.','ies, mach BE-ter dan IES-ter-dei'],
+     ['A','Where are you from?','¿De dónde es?','uer ar iu from'],
+     ['B','I\'m from Colombia. I just moved here.','Soy de Colombia. Me acabo de mudar.','aim from ko-LOM-bia. ai yast muuvd jir'],
+     ['A','Oh, welcome! How are you finding London?','¡Bienvenido! ¿Cómo le ha parecido Londres?','ou, UEL-kam. jau ar iu FAIN-ding LAN-don'],
+     ['B','I love it, but it\'s a bit cold for me!','¡Me encanta, pero hace mucho frío para mí!','ai lav it, bat its a bit kould for mi']],
+  tip:{es:'"How are you?" casi siempre es un saludo, no una pregunta real: responde "Good, thanks. You?".',en:'"How are you?" is a greeting.'}}
+];
+const POCKET = [
+ ['Excuse me','Disculpe (para llamar la atención)'],['Sorry','Perdón (lo dicen todo el tiempo)'],['Could you speak more slowly, please?','¿Puede hablar más despacio, por favor?'],
+ ['Could you repeat that, please?','¿Me lo repite, por favor?'],['I don\'t understand','No entiendo'],['Do you speak Spanish?','¿Habla español?'],
+ ['How much is it?','¿Cuánto cuesta?'],['Where is the toilet?','¿Dónde está el baño?'],['Can I pay by card?','¿Puedo pagar con tarjeta?'],
+ ['I need help','Necesito ayuda'],['Call an ambulance!','¡Llame una ambulancia!'],['I\'ve lost my passport','Perdí mi pasaporte'],
+ ['Which way is the station?','¿Por dónde queda la estación?'],['Is this seat free?','¿Este puesto está libre?'],['Cheers / Thanks a lot','Gracias / Muchas gracias'],
+ ['Could you write it down, please?','¿Me lo escribe, por favor?']
+];
+let curSit=null;
+function renderSits(){
+  $('#sits').innerHTML = SITS.map(s=>`<button class="sit ${curSit===s.id?'on':''}" onclick="openSit('${s.id}')"><span class="em">${s.ic}</span><b>${L(s.n)}</b></button>`).join('');
+  $('#pocket').innerHTML = POCKET.map((p,i)=>`<div class="pk"><div><div class="en">${esc(p[0])}</div><div class="es">${esc(p[1])}</div></div><button class="say" onclick="speak(POCKET[${i}][0])">🔊</button></div>`).join('');
+  if(curSit) openSit(curSit,true);
+}
+function openSit(id,silent){
+  curSit=id; const s=SITS.find(x=>x.id===id);
+  document.querySelectorAll('.sit').forEach((b,i)=>b.classList.toggle('on',SITS[i].id===id));
+  $('#dlg-wrap').style.display='block';
+  $('#dlg-title').textContent = s.ic+' '+L(s.n);
+  $('#dlg-ctx').textContent = L(s.ctx);
+  const who = {A:{es:'Ellos',en:'Them'},B:{es:'Tú',en:'You'}};
+  $('#dlg').innerHTML = s.l.map((x,i)=>`<div class="bub ${x[0]}"><div class="head"><div><div class="who">${L(who[x[0]])}</div><div class="en">${esc(x[1])}</div></div><button class="say" onclick="speak(SITS.find(s=>s.id==='${id}').l[${i}][1])">🔊</button></div><div class="es">${esc(x[2])}</div>${LANG==='es'?`<div class="fon">🗣️ ${esc(x[3])}</div>`:''}</div>`).join('');
+  $('#dlg-tips').innerHTML = '💡 '+esc(L(s.tip));
+  if(!silent) $('#dlg-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+let voice=null;
+function pickVoice(){ const vs=speechSynthesis.getVoices(); voice = vs.find(v=>v.lang==='en-GB'&&/female|Serena|Kate|Martha|Google UK English Female/i.test(v.name)) || vs.find(v=>v.lang==='en-GB') || vs.find(v=>/^en/.test(v.lang)) || null; }
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function speak(text){
+  if(!('speechSynthesis' in window)){ toast(L({es:'Tu navegador no tiene voz',en:'No speech support'})); return; }
+  speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; if(voice) u.voice=voice; u.rate=+$('#rate').value||.85; speechSynthesis.speak(u); return u;
+}
+function playAll(){
+  const s=SITS.find(x=>x.id===curSit); if(!s) return; speechSynthesis.cancel(); let i=0;
+  const next=()=>{ if(i>=s.l.length) return; const u=new SpeechSynthesisUtterance(s.l[i][1]); u.lang='en-GB'; if(voice)u.voice=voice; u.rate=+$('#rate').value||.85; u.onend=()=>{i++; setTimeout(next,350);}; speechSynthesis.speak(u); };
+  next();
+}
+
+/* ---------- SOS ---------- */
+const ORGS = [
+ {ic:'🇨🇴',n:'Consulado de Colombia en Londres',d:{es:'Pasaporte perdido, registro civil, poderes, asistencia a connacionales detenidos o en emergencia.',en:'Lost passport, civil registry, assistance to Colombians in emergencies.'},tel:[['020 7637 9893','+442076379893'],[L({es:'Gratis',en:'Free'})+' 0808 234 2176','+448082342176']],web:'https://londres.consulado.gov.co'},
+ {ic:'🤝',n:'IRMO (Brixton)',d:{es:'Inmigración, vivienda, beneficios, salud, inglés y empleo. Español y portugués. Línea: lun–vie 11:00–13:00.',en:'Immigration, housing, benefits, health, English and jobs.'},tel:[['020 7733 9977','+442077339977']],web:'https://irmo.org.uk',mail:'info@irmo.org.uk'},
+ {ic:'🏠',n:'Latin American House (Kilburn)',d:{es:'Asesoría legal y social gratuita: inmigración, vivienda, beneficios, empleo. Cursos de inglés.',en:'Free legal & social advice; English courses.'},tel:[['020 7372 8653','+442073728653']],web:'https://casalatina.org.uk'},
+ {ic:'♀️',n:'LAWRS — Mujeres latinoamericanas',d:{es:'Gratis y confidencial: vivienda, deudas, derechos laborales, violencia de género, consejería. Línea en español: lun–vie 11:00–13:00.',en:'Free & confidential for Latin American women.'},tel:[['0808 145 4909','+448081454909']],web:'https://lawrs.org.uk',mail:'info@lawrs.org.uk'},
+ {ic:'⚖️',n:'Citizens Advice',d:{es:'Asesoría oficial gratuita sobre deudas, vivienda, trabajo y consumo. Lun–vie 9:00–17:00.',en:'Free official advice on debt, housing, work and consumer issues.'},tel:[['0800 144 8848','+448001448848']],web:'https://www.citizensadvice.org.uk'},
+ {ic:'👷',n:'ACAS',d:{es:'Derechos laborales: salario, despido, horas, vacaciones. Gratis.',en:'Workplace rights. Free.'},tel:[['0300 123 1100','+443001231100']],web:'https://www.acas.org.uk'},
+ {ic:'⛓️',n:'Modern Slavery Helpline',d:{es:'Si te retienen el pasaporte, te obligan a trabajar o no te pagan. 24 horas, con intérpretes.',en:'Forced labour or exploitation. 24/7 with interpreters.'},tel:[['08000 121 700','+448000121700']],web:'https://www.modernslaveryhelpline.org'},
+ {ic:'💜',n:'National Domestic Abuse Helpline (Refuge)',d:{es:'Violencia doméstica. Gratis, 24 horas, confidencial.',en:'Domestic abuse. Free, 24/7.'},tel:[['0808 2000 247','+448082000247']],web:'https://www.nationaldahelpline.org.uk'},
+ {ic:'🫂',n:'Samaritans',d:{es:'Si te sientes solo, triste o desbordado. Gratis, 24 horas.',en:'If you feel overwhelmed. Free, 24/7.'},tel:[['116 123','116123']],web:'https://www.samaritans.org'}
+];
+const SOSACC = [
+ {t:{es:'🛂 Perdí el pasaporte',en:'🛂 I lost my passport'},b:{es:'<ol><li>Denuncia la pérdida o robo a la policía (101 o en met.police.uk) y guarda el número de referencia.</li><li>Pide cita en tu consulado (Colombia: londres.consulado.gov.co) para el pasaporte de emergencia o uno nuevo.</li><li>Si tenías visa o eVisa, informa a UK Visas and Immigration por gov.uk.</li><li>Tip: guarda desde ya una foto del pasaporte en tu correo.</li></ol>',en:'<ol><li>Report it to police (101 or online) and keep the reference number.</li><li>Book your consulate.</li><li>Inform UKVI if you had a visa.</li></ol>'}},
+ {t:{es:'📱 Me robaron el celular',en:'📱 My phone was stolen'},b:{es:'<ol><li>Desde otro dispositivo, bloquéalo: Find My iPhone o Find My Device (Google).</li><li>Llama a tu operador para bloquear la SIM.</li><li>Denuncia en met.police.uk o al 101 y pide el "crime reference number".</li><li>Cambia contraseñas del correo, bancos y WhatsApp.</li></ol>',en:'<ol><li>Lock it remotely.</li><li>Block the SIM.</li><li>Report to police.</li><li>Change passwords.</li></ol>'}},
+ {t:{es:'🤒 Me enfermé',en:'🤒 I got sick'},b:{es:'<ul class="dots"><li><b>Leve:</b> farmacia (Boots, Superdrug) sin cita.</li><li><b>Urgente pero no grave:</b> llama al 111 o entra a 111.nhs.uk.</li><li><b>Grave</b> (dolor de pecho, no respira, sangrado fuerte): 999 o urgencias (A&E) — ver el mapa.</li><li>Los visitantes pueden tener que pagar algunos tratamientos del NHS; urgencias (A&E) y el 111 no se cobran al ingresar. Viaja con seguro médico.</li></ul>',en:'<ul class="dots"><li>Minor: pharmacy.</li><li>Urgent: 111.</li><li>Serious: 999 / A&E.</li></ul>'}},
+ {t:{es:'👮 Me detuvo la policía',en:'👮 Police stopped me'},b:{es:'<ul class="dots"><li>Mantén la calma y sé educado. Tienes derecho a saber por qué te paran.</li><li>Si te arrestan, tienes derecho a un abogado gratuito, a un intérprete y a que avisen a tu consulado. Pide: <b>"I want a solicitor and a Spanish interpreter"</b>.</li><li>No firmes nada que no entiendas.</li></ul>',en:'<ul class="dots"><li>Stay calm. You have the right to a free solicitor, an interpreter and consular contact.</li></ul>'}},
+ {t:{es:'💸 No me pagan / me explotan en el trabajo',en:'💸 Unpaid or exploited at work'},b:{es:'<ul class="dots"><li>Anota horas, fechas y pagos; guarda mensajes.</li><li>Llama a ACAS (0300 123 1100) o pide ayuda a LAWRS, IRMO o Casa Latina.</li><li>Si te retienen el pasaporte o te amenazan: Modern Slavery Helpline 08000 121 700 (24h).</li></ul>',en:'<ul class="dots"><li>Keep records. Call ACAS or the Modern Slavery Helpline.</li></ul>'}},
+ {t:{es:'🏚️ Me quedé sin dónde dormir',en:'🏚️ I have nowhere to sleep'},b:{es:'<ul class="dots"><li>Contacta Shelter (shelter.org.uk) o el ayuntamiento ("council") del barrio donde estás.</li><li>Las organizaciones latinas (IRMO, Casa Latina, LAWRS) te orientan en español.</li><li>Si corres peligro, llama al 999.</li></ul>',en:'<ul class="dots"><li>Contact Shelter or the local council. Call 999 if in danger.</li></ul>'}},
+ {t:{es:'📄 Dudas de inmigración',en:'📄 Immigration questions'},b:{es:'<ul class="dots"><li>Información oficial solo en <b>gov.uk</b>.</li><li>Asesórate únicamente con organizaciones o abogados registrados (OISC o solicitors). IRMO y Casa Latina dan orientación gratis.</li><li>⚠️ No pagues a "tramitadores" que prometen papeles rápidos: es la estafa más común contra latinos.</li></ul>',en:'<ul class="dots"><li>Use gov.uk and regulated advisers only. Beware of fake "fixers".</li></ul>'}}
+];
+function renderSOS(){
+  $('#orgs').innerHTML = ORGS.map(o=>`<div class="org"><div class="ic">${o.ic}</div><div style="flex:1;min-width:0"><b>${esc(o.n)}</b><div class="small muted">${esc(L(o.d))}</div><div class="acts">${o.tel.map(t=>`<a class="btn sm red" style="color:#fff" href="tel:${t[1]}">📞 ${esc(t[0])}</a>`).join('')}${o.web?`<a class="btn sm ghost" href="${o.web}" target="_blank" rel="noopener">🌐 Web</a>`:''}${o.mail?`<a class="btn sm ghost" href="mailto:${o.mail}">✉️</a>`:''}</div></div></div>`).join('');
+  renderAcc($('#sos-acc'),SOSACC);
+}
+
+/* ---------- Checklist ---------- */
+const CHECK = [
+ {es:'Revisar si necesito visa: los colombianos necesitan visa de visitante (desde nov. 2024). Muchos latinos (ej. México, Chile, Argentina) necesitan ETA (£20).',en:'Check visa: Colombians need a visitor visa; many others need an ETA (£20).'},
+ {es:'Seguro médico de viaje contratado',en:'Travel health insurance'},
+ {es:'Foto del pasaporte, visa y seguro guardada en el correo',en:'Copies of passport, visa and insurance in my email'},
+ {es:'Adaptador de enchufe tipo G (3 patas). Voltaje 230 V',en:'Type G plug adapter. 230 V'},
+ {es:'SIM británica o eSIM (giffgaff, Lebara, Lyca, Voxi…)',en:'UK SIM or eSIM'},
+ {es:'Tarjeta contactless o celular con Apple/Google Pay para el transporte',en:'Contactless card or phone wallet for transport'},
+ {es:'Guardar mi dirección en esta app',en:'Save my address in this app'},
+ {es:'Descargar TfL Go y Citymapper; guardar el mapa de Londres sin conexión en Google Maps',en:'Install TfL Go and Citymapper; save offline Google Map'},
+ {es:'Guardar los números: 999, 111, 101 y el consulado',en:'Save 999, 111, 101 and consulate numbers'},
+ {es:'Abrir cuenta en un banco digital (Monzo, Starling, Revolut o Wise)',en:'Open a digital bank account'},
+ {es:'Registrarme con un médico (GP) cercano — es gratis',en:'Register with a local GP — free'},
+ {es:'Si tengo permiso de trabajo: pedir el National Insurance number en gov.uk',en:'If allowed to work: apply for an NI number'},
+ {es:'Inscribirme en clases de inglés gratis o baratas (ESOL, IRMO, Casa Latina)',en:'Join English (ESOL) classes'},
+ {es:'Conocer el camino de casa a la estación más cercana',en:'Learn the way home from the nearest station'}
+];
+function renderCheck(){
+  const done = store.get('chk',[]);
+  $('#checklist').innerHTML = CHECK.map((c,i)=>`<label class="chk ${done.includes(i)?'done':''}"><input type="checkbox" ${done.includes(i)?'checked':''} onchange="toggleChk(${i})"><span class="t">${esc(L(c))}</span></label>`).join('');
+  const pct = Math.round(done.length/CHECK.length*100);
+  $('#prog').style.width=pct+'%';
+  $('#prog-t').textContent = `${done.length}/${CHECK.length} — ${pct}%`;
+}
+function toggleChk(i){ let d=store.get('chk',[]); d = d.includes(i)? d.filter(x=>x!==i) : [...d,i]; store.set('chk',d); renderCheck(); }
+const VISA = [
+ {t:{es:'🇨🇴 Colombianos: visa de visitante',en:'🇨🇴 Colombians: visitor visa'},b:{es:'<p>Desde el 26 de noviembre de 2024 el Reino Unido volvió a exigir visa a los colombianos, y ya <b>no aplica la ETA</b>. La Standard Visitor Visa se pide en línea en gov.uk con cita de biométricos en Bogotá; costo de referencia 2026: £135 (verifica en gov.uk antes de pagar). Pídela con tiempo: el gobierno recomienda hasta 3 meses antes.</p><p class="mt">Si solo haces conexión en un aeropuerto británico necesitas visa de tránsito.</p>',en:'<p>Since 26 Nov 2024 Colombians need a visa; ETA no longer applies. Apply on gov.uk.</p>'}},
+ {t:{es:'🌎 Otros latinoamericanos',en:'🌎 Other Latin Americans'},b:{es:'<p>Muchos países (por ejemplo México, Chile, Argentina, Brasil) entran sin visa pero con <b>ETA</b>, que cuesta £20 desde el 8 de abril de 2026 y se pide solo en gov.uk o la app oficial "UK ETA". Otros como Ecuador, Bolivia, Venezuela, Cuba o República Dominicana necesitan visa. Comprueba tu caso en <a href="https://www.gov.uk/check-uk-visa" target="_blank" rel="noopener">gov.uk/check-uk-visa</a>.</p>',en:'<p>Many countries need an ETA (£20 since 8 April 2026). Check gov.uk/check-uk-visa.</p>'}},
+ {t:{es:'🧳 Qué llevar a migración',en:'🧳 What to carry at the border'},b:{es:'<ul class="dots"><li>Pasaporte vigente y visa/eVisa</li><li>Tiquete de regreso</li><li>Dirección donde te quedas (y carta de invitación si te hospeda un familiar)</li><li>Prueba de fondos (extractos bancarios)</li><li>Seguro médico</li></ul>',en:'<ul class="dots"><li>Passport & visa</li><li>Return ticket</li><li>Address / invitation letter</li><li>Proof of funds</li><li>Insurance</li></ul>'}},
+ {t:{es:'⚠️ Cuidado con webs falsas',en:'⚠️ Beware of fake websites'},b:{es:'<p>Solo tramita visa y ETA en <b>gov.uk</b>. Hay páginas que imitan al gobierno y cobran mucho más.</p>',en:'<p>Use gov.uk only.</p>'}}
+];
+
+/* ---------- Money ---------- */
+let RATES=null;
+const CUR = ['GBP','COP','USD','EUR','MXN','PEN','CLP','ARS','VES','BRL'];
+async function loadRates(){
+  try{
+    const {data}=await getJSON('https://open.er-api.com/v6/latest/GBP');
+    if(data?.result!=='success') throw 0;
+    RATES=data.rates; store.set('rates',{r:RATES,t:data.time_last_update_unix});
+  }catch(e){ const c=store.get('rates',null); if(c) RATES=c.r; }
+  renderFX();
+}
+const fmt=(n,c)=>new Intl.NumberFormat(LANG==='es'?'es-CO':'en-GB',{style:'currency',currency:c,maximumFractionDigits:c==='COP'||c==='CLP'?0:2}).format(n);
+function renderFX(){
+  const c=store.get('rates',null);
+  if(!RATES){ $('#fx-main').innerHTML=`<span class="small muted">${L({es:'Sin conexión para tasas.',en:'No connection for rates.'})}</span>`; return; }
+  $('#fx-main').innerHTML = `<div style="font-family:'Barlow Condensed';font-size:2rem;font-weight:800">£1 = ${fmt(RATES.COP,'COP')}</div><div class="small">£1 = ${fmt(RATES.USD,'USD')} · ${fmt(RATES.EUR,'EUR')}</div>`;
+  if(c?.t) $('#fx-upd').textContent = L({es:'Actualizado',en:'Updated'})+': '+tz(new Date(c.t*1000),'America/Bogota',{dateStyle:'medium',timeStyle:'short'})+' (COL) · ExchangeRate-API';
+  const sel=$('#fx-from'); if(!sel.options.length) sel.innerHTML=CUR.map(x=>`<option>${x}</option>`).join('');
+  const amt=+$('#fx-amt').value||0, from=sel.value||'GBP', inGBP = amt / (from==='GBP'?1:RATES[from]);
+  $('#fx-results').innerHTML = CUR.filter(x=>x!==from).map(x=>`<div class="arr"><span>${x}</span><b>${fmt(inGBP*(x==='GBP'?1:RATES[x]),x)}</b></div>`).join('');
+  $('#wage-cop').textContent = '≈ '+fmt(12.71*RATES.COP,'COP')+' '+L({es:'por hora',en:'per hour'});
+}
+const MONEY_TIPS = [
+ {es:'Usa una sola tarjeta contactless para el transporte: los topes diarios te protegen.',en:'Use one contactless card for transport — caps protect you.'},
+ {es:'Los museos nacionales son gratis (British Museum, Natural History, National Gallery, Tate Modern).',en:'National museums are free.'},
+ {es:'Supermercados baratos: Lidl, Aldi y las marcas propias de Tesco/Sainsbury\'s.',en:'Cheap supermarkets: Lidl, Aldi.'},
+ {es:'Productos latinos: Elephant & Castle, Brixton y Seven Sisters.',en:'Latin products: Elephant & Castle, Brixton, Seven Sisters.'},
+ {es:'Paga en libras (GBP) cuando el datáfono te pregunte; pagar en tu moneda sale más caro.',en:'Always pay in GBP when the card machine asks.'},
+ {es:'Apps como Too Good To Go venden comida del día con gran descuento.',en:'Too Good To Go sells surplus food cheaply.'}
+];
+
+/* ---------- Culture & slang ---------- */
+const CULTURE = [
+ ['🧍',{es:'Haz la fila',en:'Queue'},{es:'Colarse es de lo peor visto. En el bus, en la tienda y hasta en el pub se hace fila.',en:'Never jump a queue.'}],
+ ['↗️',{es:'Escaleras: párate a la derecha',en:'Stand on the right'},{es:'En las escaleras eléctricas del metro te paras a la derecha y caminas por la izquierda.',en:'Stand right, walk left on escalators.'}],
+ ['🚗',{es:'Mira a la derecha al cruzar',en:'Look right'},{es:'Los carros van por la izquierda. En el piso de muchos cruces dice "LOOK RIGHT".',en:'Traffic drives on the left.'}],
+ ['🤫',{es:'Silencio en el metro',en:'Quiet on the Tube'},{es:'La gente no habla duro ni pone música sin audífonos. Deja salir antes de entrar.',en:'Keep quiet; let people off first.'}],
+ ['🙏',{es:'Sorry, please y thank you',en:'Sorry, please, thank you'},{es:'Los ingleses piden perdón por todo. Usa "please" y "thank you" siempre: sin ellos sonarás grosero.',en:'Always say please and thanks.'}],
+ ['☔',{es:'El clima cambia rápido',en:'Changeable weather'},{es:'Lleva chaqueta impermeable y vístete por capas, incluso en verano.',en:'Dress in layers.'}],
+ ['🍺',{es:'En el pub se pide en la barra',en:'Order at the bar'},{es:'No esperes que te atiendan en la mesa: ve a la barra, pide y paga ahí.',en:'In pubs you order at the bar.'}],
+ ['💷',{es:'Propinas',en:'Tipping'},{es:'Restaurantes: 10–12,5% (revisa si ya viene como "service charge"). Pubs y cafés: no es obligatorio.',en:'10–12.5% in restaurants if not included.'}],
+ ['⏰',{es:'Puntualidad',en:'Punctuality'},{es:'Llegar tarde a citas, al médico o al trabajo se toma muy en serio. Si te vas a demorar, avisa.',en:'Be on time.'}],
+ ['🗓️',{es:'Domingos',en:'Sundays'},{es:'Las tiendas grandes abren solo unas 6 horas los domingos.',en:'Big shops open ~6 hours on Sundays.'}]
+];
+const SLANG = [['Cheers','Gracias / salud'],['Mate','Amigo, parcero'],['Innit?','¿Cierto?'],['Quid','Libra (£)'],['Fiver / Tenner','Billete de £5 / £10'],['Loo','Baño'],['Queue','Fila'],['Flat','Apartamento'],['Lift','Ascensor'],['Chips / Crisps','Papas a la francesa / papas de paquete'],['Takeaway','Comida para llevar'],['Top up','Recargar'],['Mind the gap','Cuidado con el espacio (metro)'],['Cuppa','Una taza de té'],['Knackered','Muerto del cansancio'],['Gutted','Muy desilusionado'],['Sorted','Resuelto, listo'],['Ta','Gracias (informal)']];
+
+/* ---------- Safety ---------- */
+const SAFETY = [
+ {t:{es:'📱 Robo de celular en la calle',en:'📱 Phone snatching'},b:{es:'<p>Es el robo más común: pasan en bicicleta o moto y te arrancan el celular. No lo uses en el borde del andén, guárdalo al salir del metro y aléjate de la calle cuando lo uses.</p>',en:'<p>Thieves on bikes snatch phones. Keep away from the kerb.</p>'}},
+ {t:{es:'👜 Carteristas',en:'👜 Pickpockets'},b:{es:'<p>Zonas de mucha gente: Oxford Street, Leicester Square, Camden, el metro en hora pico. Mochila adelante y billetera en bolsillo delantero.</p>',en:'<p>Crowded areas. Keep bags in front.</p>'}},
+ {t:{es:'🚕 Taxis',en:'🚕 Taxis'},b:{es:'<p>Solo usa taxis negros (black cabs) o minicabs reservados por app. Nunca te subas a un carro que te ofrezca viaje en la calle: es ilegal y peligroso.</p>',en:'<p>Use black cabs or booked minicabs only.</p>'}},
+ {t:{es:'🎭 Estafas comunes',en:'🎭 Common scams'},b:{es:'<ul class="dots"><li>Juegos de "adivina dónde está la bolita" en los puentes.</li><li>Arriendos que piden depósito antes de ver el lugar.</li><li>"Tramitadores" que prometen papeles migratorios.</li><li>Mensajes falsos de "paquete pendiente" o del banco pidiendo claves.</li><li>Ofertas de trabajo que piden pagar para empezar.</li></ul>',en:'<ul class="dots"><li>Street games, fake rentals, fake immigration fixers, phishing.</li></ul>'}},
+ {t:{es:'🌙 De noche',en:'🌙 At night'},b:{es:'<p>Comparte tu ubicación con un familiar, usa calles iluminadas y transporte oficial. Los buses nocturnos (N) son seguros y tienen cámaras.</p>',en:'<p>Share your location, use lit streets and official transport.</p>'}}
+];
+
+/* ---------- Media (real photos from Wikipedia/Wikimedia) ---------- */
+const GALLERY = [
+ ['Tower_Bridge','Tower Bridge',51.5055,-0.0754],['Big_Ben','Big Ben',51.5007,-0.1246],['London_Eye','London Eye',51.5033,-0.1196],
+ ['Buckingham_Palace','Buckingham Palace',51.5014,-0.1419],['British_Museum','British Museum',51.5194,-0.1270],['Trafalgar_Square','Trafalgar Square',51.5080,-0.1281],
+ ['Piccadilly_Circus','Piccadilly Circus',51.5101,-0.1340],['Camden_Market','Camden Market',51.5413,-0.1463],['London_Underground','London Underground',51.5154,-0.1416],
+ ['Brixton_Market','Brixton Market',51.4625,-0.1129],['Elephant_and_Castle','Elephant & Castle',51.4946,-0.1003],['Hyde_Park,_London','Hyde Park',51.5073,-0.1657],
+ ['Heathrow_Airport','Heathrow',51.4700,-0.4543],['Routemaster','Routemaster bus',51.5080,-0.1281],['Covent_Garden','Covent Garden',51.5117,-0.1240]
+];
+async function wikiImg(title,w=800){
+  const cache=store.get('wimg',{}); if(cache[title]) return cache[title];
+  const {data}=await getJSON('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title));
+  let src = data?.thumbnail?.source || data?.originalimage?.source || null;
+  if(src) src = src.replace(/\/(\d+)px-/,`/${w}px-`);
+  if(src){ cache[title]=src; store.set('wimg',cache); }
+  return src;
+}
+let galDone=false;
+function loadGallery(){
+  if(galDone) return; galDone=true;
+  $('#gallery').innerHTML = GALLERY.map((g,i)=>`<div class="ph" id="ph${i}" onclick="flyTo(${g[2]},${g[3]})"><div class="ph-fb"><span class="spin" style="position:static;background:none;padding:0"></span></div><span>${esc(g[1])}</span></div>`).join('');
+  GALLERY.forEach(async (g,i)=>{
+    const el=$('#ph'+i);
+    try{ const src=await wikiImg(g[0],600); if(!src) throw 0;
+      el.querySelector('.ph-fb').outerHTML = `<img loading="lazy" alt="${esc(g[1])}" src="${src}" onerror="this.outerHTML='<div class=ph-fb>📷</div>'">`;
+    }catch(e){ el.querySelector('.ph-fb').innerHTML='📷'; }
+  });
+  const VL = [
+   [{es:'Cómo usar el metro de Londres (en español)',en:'How to use the London Underground'},'como usar el metro de londres'],
+   [{es:'De Heathrow al centro en metro',en:'Heathrow to central London by Tube'},'heathrow to central london piccadilly line'],
+   [{es:'Latinos en Londres: Elephant & Castle',en:'Latinos in London: Elephant & Castle'},'latinos en londres elephant and castle'],
+   [{es:'Caminata por Londres 4K',en:'London walking tour 4K'},'london walking tour 4k 2026'],
+   [{es:'Vivir en Londres siendo colombiano',en:'Living in London as a Colombian'},'colombianos viviendo en londres'],
+   [{es:'Cómo pagar el bus en Londres',en:'How to pay for London buses'},'how to pay london bus contactless']
+  ];
+  $('#vlinks').innerHTML = VL.map(v=>`<a class="vlink" href="https://www.youtube.com/results?search_query=${encodeURIComponent(v[1])}" target="_blank" rel="noopener"><span class="play">▶</span><span><b>${esc(L(v[0]))}</b><br><small class="muted">YouTube</small></span></a>`).join('');
+}
+function flyTo(lat,lng){ go('map'); setTimeout(()=>{ map.setView([lat,lng],16); },250); }
+async function loadHero(){
+  try{ const src=await wikiImg('Tower_Bridge',1200); if(src){ $('#hero').style.backgroundImage=`url("${src}")`; $('#hero-credit').textContent='Foto: Wikimedia Commons'; } }catch(e){}
+}
+
+/* ---------- Weather (Open-Meteo) ---------- */
+const WMO = c=> c===0?['☀️',{es:'Despejado',en:'Clear'}]: c<=3?['⛅',{es:'Parcialmente nublado',en:'Partly cloudy'}]: c<=48?['🌫️',{es:'Niebla',en:'Fog'}]: c<=57?['🌦️',{es:'Llovizna',en:'Drizzle'}]: c<=67?['🌧️',{es:'Lluvia',en:'Rain'}]: c<=77?['🌨️',{es:'Nieve',en:'Snow'}]: c<=82?['🌧️',{es:'Aguaceros',en:'Showers'}]:['⛈️',{es:'Tormenta',en:'Storm'}];
+let WX=null;
+async function loadWeather(){
+  try{ const {data}=await getJSON('https://api.open-meteo.com/v1/forecast?latitude=51.5072&longitude=-0.1276&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FLondon&forecast_days=4');
+    if(!data?.current) throw 0; WX=data; store.set('wx',data);
+  }catch(e){ WX=store.get('wx',null); }
+  renderWeather();
+}
+function renderWeather(){
+  if(!WX){ $('#wx').innerHTML=`<span class="small">${L({es:'Sin datos del clima.',en:'No weather data.'})}</span>`; return; }
+  const c=WX.current, w=WMO(c.weather_code);
+  $('#wx').innerHTML = `<span style="font-size:2.6rem">${w[0]}</span><div><div class="t">${Math.round(c.temperature_2m)}°C</div><div class="small" style="opacity:.8">${L(w[1])} · ${L({es:'sensación',en:'feels'})} ${Math.round(c.apparent_temperature)}°</div></div>`;
+  const d=WX.daily;
+  $('#wx-days').innerHTML = d.time.slice(1,4).map((t,i)=>{ const k=i+1; return `<div>${tz(new Date(t+'T12:00:00Z'),'Europe/London',{weekday:'short'})}<br>${WMO(d.weather_code[k])[0]}<br><b>${Math.round(d.temperature_2m_max[k])}°</b>/${Math.round(d.temperature_2m_min[k])}°<br>💧${d.precipitation_probability_max[k]??0}%</div>`; }).join('');
+  const rain = d.precipitation_probability_max[0]>=40, cold = c.temperature_2m<10;
+  $('#wx-tip').textContent = (rain? L({es:'☔ Lleva sombrilla o impermeable hoy. ',en:'☔ Take an umbrella today. '}):'') + (cold? L({es:'🧥 Hace frío: abrígate por capas.',en:'🧥 It\'s cold: wear layers.'}):'');
+}
+
+/* ---------- My address ---------- */
+function saveAddr(){ const v=$('#my-addr').value.trim(); store.set('addr',v); toast(v?L({es:'Dirección guardada ✓',en:'Address saved ✓'}):L({es:'Dirección borrada',en:'Address cleared'})); }
+async function routeHome(){
+  const a=store.get('addr',''); if(!a){ toast(L({es:'Primero guarda tu dirección',en:'Save your address first'})); return; }
+  go('transit'); $('#j-to').value=a; $('#j-out').innerHTML='<span class="spin"></span> GPS…';
+  try{ const c=await getPos(); $('#j-from').value=`${c.latitude.toFixed(5)},${c.longitude.toFixed(5)}`; planJourney(); }
+  catch(e){ $('#j-out').innerHTML=''; toast(L({es:'Activa la ubicación o escribe dónde estás',en:'Enable location or type where you are'})); $('#j-from').focus(); }
+}
+function openShow(){ const a=store.get('addr',''); $('#show-addr').textContent = a || L({es:'(Guarda tu dirección en Inicio)',en:'(Save your address on Home)'}); $('#showcard').classList.add('on'); }
+
+/* ---------- Render all ---------- */
+function renderAll(){
+  renderFares(); renderAcc($('#how-acc'),HOW); renderSits(); renderSOS(); renderCheck(); renderAcc($('#visa-acc'),VISA);
+  $('#money-tips').innerHTML = MONEY_TIPS.map(t=>`<li>${esc(L(t))}</li>`).join('');
+  $('#culture').innerHTML = CULTURE.map(c=>`<div class="card"><div style="font-size:1.6rem">${c[0]}</div><h3 class="mt">${esc(L(c[1]))}</h3><p class="small muted">${esc(L(c[2]))}</p></div>`).join('');
+  $('#slang').innerHTML = SLANG.map(s=>`<tr><td><b>${esc(s[0])}</b> <button class="say" style="width:26px;height:26px;font-size:.7rem" onclick="speak('${s[0].replace(/'/g,"\\'")}')">🔊</button></td><td style="font-weight:400;text-align:right">${esc(s[1])}</td></tr>`).join('');
+  renderAcc($('#safety'),SAFETY);
+  if(map) renderChips();
+  if(RATES) renderFX(); if(WX) renderWeather();
+  if(loadStatus._done) loadStatus();
+  tick();
+  $('#upd').textContent = tz(new Date(),'America/Bogota',{dateStyle:'long'});
+}
+
+/* ---------- PWA ---------- */
+let deferred=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferred=e; if(!store.get('noInstall',false)) $('#install').classList.add('on'); });
+$('#install-btn').onclick=async()=>{ if(!deferred) return; deferred.prompt(); await deferred.userChoice; deferred=null; $('#install').classList.remove('on'); };
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent), standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+if(isIOS && !standalone && !store.get('iosHint',false)){ setTimeout(()=>{ toast(L({es:'En iPhone: toca Compartir → "Agregar a inicio" para instalar',en:'On iPhone: Share → "Add to Home Screen"'})); store.set('iosHint',true); },4000); }
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+
+/* ---------- Boot ---------- */
+applyLang(); renderAll();
+$('#my-addr').value = store.get('addr','');
+$('#fx-amt').addEventListener('input',renderFX); $('#fx-from').addEventListener('change',renderFX);
+$('#arr-q').addEventListener('keydown',e=>{ if(e.key==='Enter') searchStop(); });
+$('#j-to').addEventListener('keydown',e=>{ if(e.key==='Enter') planJourney(); });
+setInterval(tick,15000);
+loadHero(); loadWeather(); loadRates();
+setTimeout(()=>$('#splash').classList.add('off'),900);
+const h=location.hash.slice(1); if(h && document.getElementById('v-'+h)) go(h);
+</script>
+</body>
+</html>
