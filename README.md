@@ -11,11 +11,17 @@ PWA instalable, hecha en HTML + JavaScript puro, sin servidor propio.
 
 | Módulo | Qué hace |
 |---|---|
+| 🏰 Lugares de interés | 34 lugares con foto real, descripción, consejo, estación, si es gratis o de pago, ficha con historia de Wikipedia en español, pronunciación del nombre, "Cerca de mí", lista "Quiero ir / Ya fui" y 6 itinerarios de un día dibujados en el mapa |
 | 🗺️ Mapa | Mapa interactivo: consulado de Colombia, IRMO, Casa Latina, LAWRS, urgencias (A&E), barrios latinos, lugares y aeropuertos. "Dónde estoy", paradas cercanas y líneas del metro dibujadas desde TfL |
 | 🚇 Metro y bus | Planificador de rutas, estado de líneas y próximas llegadas **en vivo** (API oficial de TfL); tarifas 2026 y cómo usar contactless/Oyster |
 | 💬 Frases | 14 situaciones (migración, metro, perdido, bus, restaurante, farmacia, médico GP, 999, policía, arriendo, entrevista, banco, charla) con audio en inglés británico y pronunciación para hispanohablantes |
 | 🆘 SOS | 999 / 111 / 101 con un toque, organizaciones latinas y oficiales, y guías "¿qué hago si…?" |
 | ✅ Primeros días | Lista de pasos que se guarda en el celular + requisitos de visa/ETA |
+| 🩺 Salud (NHS) | A dónde ir según el problema (farmacia → GP → 111 → urgencias), cómo registrarse con un GP, costos, dentista, salud mental |
+| 💼 Trabajo y estudio | Derecho a trabajar, NI number, derechos laborales, dónde buscar, ESOL, convalidar títulos y calculadora de pago que avisa si está bajo el salario mínimo |
+| 🏠 Vivienda | Señales de estafa, depósito y su protección, Right to Rent, lista para revisar antes de firmar |
+| 🫓 Comida latina | Zonas con productos de casa y nombres de alimentos en inglés con audio |
+| 🧥 Clima y maleta | Ropa por mes, temperaturas promedio, horas de luz y próximos festivos (gov.uk en vivo) |
 | 💷 Dinero | Cambio en vivo GBP ↔ COP, USD, EUR, MXN, PEN, CLP, ARS, VES, BRL; salario mínimo 2026 |
 | ☕ Costumbres, 🛡️ Seguridad, 📸 Fotos y videos | Cultura, jerga, riesgos reales, fotos reales de Wikimedia Commons y videos |
 | 📍 Mi dirección | Botón "Llévame a casa" y tarjeta en inglés para mostrar si te pierdes |
