@@ -1,5 +1,5 @@
 /* Londres para Latinos — Service Worker (Vibras Positivas HM) */
-const VERSION = 'lxl-v2';
+const VERSION = 'lxl-v3';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'];
@@ -24,9 +24,12 @@ self.addEventListener('fetch', e => {
     }).catch(() => caches.match(req).then(r => r || caches.match('./index.html'))));
     return;
   }
-  // Resto (app, fuentes, mapas, fotos): caché primero
+  // Fotos de Wikimedia: directo a la red (nunca guardar respuestas fallidas)
+  if (/wikimedia\.org$/.test(url.host)) return;
+  // Resto (app, fuentes, mapas): caché primero; solo se guardan respuestas buenas
   e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
-    if (r.ok || r.type === 'opaque') { const cp = r.clone(); caches.open(VERSION).then(c => c.put(req, cp)); }
+    const tile = /basemaps\.cartocdn\.com$/.test(url.host);
+    if (r.ok || (tile && r.type === 'opaque')) { const cp = r.clone(); caches.open(VERSION).then(c => c.put(req, cp)); }
     return r;
   }).catch(() => hit)));
 });
