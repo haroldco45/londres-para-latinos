@@ -1246,13 +1246,53 @@ const GALLERY = [
  ['Brixton_Market','Brixton Market',51.4625,-0.1129],['Elephant_and_Castle','Elephant & Castle',51.4946,-0.1003],['Hyde_Park,_London','Hyde Park',51.5073,-0.1657],
  ['Heathrow_Airport','Heathrow',51.4700,-0.4543],['Routemaster','Routemaster bus',51.5080,-0.1281],['Covent_Garden','Covent Garden',51.5117,-0.1240]
 ];
-async function wikiImg(title,w=800){
-  const cache=store.get('wimg',{}); if(cache[title]) return cache[title];
-  const {data}=await getJSON('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title));
-  let src = data?.thumbnail?.source || data?.originalimage?.source || null;
-  if(src) src = src.replace(/\/(\d+)px-/,`/${w}px-`);
-  if(src){ cache[title]=src; store.set('wimg',cache); }
-  return src;
+/* Fotos reales de Wikipedia / Wikimedia Commons.
+   Wikimedia solo sirve miniaturas en tamaños estándar (250, 330, 500, 960, 1280…),
+   así que pedimos URLs a la API oficial y probamos cada foto antes de mostrarla. */
+try{ localStorage.removeItem('lxl_wimg'); }catch(e){}
+const IMGC = store.get('img3',{});
+const IMG_PENDING = {};
+const sized = (u,w)=> /\/thumb\//.test(u) ? u.replace(/\/\d+px-([^/]+)$/, `/${w}px-$1`) : u;
+function probe(u){ return new Promise(res=>{ if(!u) return res(false); const i=new Image(); const t=setTimeout(()=>res(false),12000); i.onload=()=>{clearTimeout(t);res(i.naturalWidth>1);}; i.onerror=()=>{clearTimeout(t);res(false);}; i.referrerPolicy='no-referrer'; i.src=u; }); }
+async function wikiBatch(titles){
+  const need=[...new Set(titles)].filter(t=>t && !IMGC[t] && !IMG_PENDING[t]);
+  for(let i=0;i<need.length;i+=40){
+    const chunk=need.slice(i,i+40);
+    const job=(async()=>{
+      try{
+        const url='https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&origin=*&redirects=1&prop=pageimages&piprop=thumbnail|original&pithumbsize=500&titles='+encodeURIComponent(chunk.map(t=>t.replace(/_/g,' ')).join('|'));
+        const {data}=await getJSON(url);
+        const q=data?.query||{}; const map={};
+        (q.normalized||[]).forEach(n=>map[n.from]=n.to);
+        (q.redirects||[]).forEach(r=>map[r.from]=r.to);
+        const pages={}; (q.pages||[]).forEach(pg=>pages[pg.title]=pg);
+        chunk.forEach(t=>{ let k=t.replace(/_/g,' '); for(let n=0;n<3&&map[k];n++) k=map[k]; const pg=pages[k];
+          if(pg&&(pg.thumbnail||pg.original)) IMGC[t]={t:pg.thumbnail?.source||'',o:pg.original?.source||''}; });
+        store.set('img3',IMGC);
+      }catch(e){}
+    })();
+    chunk.forEach(t=>IMG_PENDING[t]=job);
+    await job; chunk.forEach(t=>delete IMG_PENDING[t]);
+  }
+  await Promise.all(titles.map(t=>IMG_PENDING[t]).filter(Boolean));
+}
+async function commonsSearch(q){
+  try{
+    const url='https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&origin=*&generator=search&gsrnamespace=6&gsrlimit=3&gsrsearch='+encodeURIComponent(q+' filetype:bitmap')+'&prop=imageinfo&iiprop=url&iiurlwidth=500';
+    const {data}=await getJSON(url);
+    const pg=(data?.query?.pages||[]).sort((a,b)=>a.index-b.index).find(x=>x.imageinfo?.[0]?.thumburl);
+    return pg?{t:pg.imageinfo[0].thumburl,o:pg.imageinfo[0].url}:null;
+  }catch(e){ return null; }
+}
+/* Devuelve una URL que SÍ carga (o null). big=true para la foto grande. */
+async function wikiImg(title,w=500,fallbackQuery){
+  await wikiBatch([title]);
+  let r=IMGC[title];
+  const cands = r ? (w>500 ? [sized(r.t,960), r.t, r.o] : [r.t, sized(r.t,330), r.o]) : [];
+  for(const c of [...new Set(cands)]) if(await probe(c)) return c;
+  const cs = await commonsSearch(fallbackQuery || title.replace(/_/g,' ').replace(/,.*$/,'')+' London');
+  if(cs){ for(const c of (w>500?[sized(cs.t,960),cs.t,cs.o]:[cs.t,cs.o])) if(await probe(c)){ IMGC[title]=cs; store.set('img3',IMGC); return c; } }
+  return null;
 }
 let galDone=false;
 function loadGallery(){
@@ -1260,8 +1300,8 @@ function loadGallery(){
   $('#gallery').innerHTML = GALLERY.map((g,i)=>`<div class="ph" id="ph${i}" onclick="flyTo(${g[2]},${g[3]})"><div class="ph-fb"><span class="spin" style="position:static;background:none;padding:0"></span></div><span>${esc(g[1])}</span></div>`).join('');
   GALLERY.forEach(async (g,i)=>{
     const el=$('#ph'+i);
-    try{ const src=await wikiImg(g[0],600); if(!src) throw 0;
-      el.querySelector('.ph-fb').outerHTML = `<img loading="lazy" alt="${esc(g[1])}" src="${src}" onerror="this.outerHTML='<div class=ph-fb>📷</div>'">`;
+    try{ const src=await wikiImg(g[0],500,g[1]+' London'); if(!src) throw 0;
+      el.querySelector('.ph-fb').outerHTML = `<img alt="${esc(g[1])}" src="${src}" referrerpolicy="no-referrer">`;
     }catch(e){ el.querySelector('.ph-fb').innerHTML='📷'; }
   });
   const VL = [
@@ -1276,7 +1316,7 @@ function loadGallery(){
 }
 function flyTo(lat,lng){ go('map'); setTimeout(()=>{ map.setView([lat,lng],16); },250); }
 async function loadHero(){
-  try{ const src=await wikiImg('Tower_Bridge',1200); if(src){ $('#hero').style.backgroundImage=`url("${src}")`; $('#hero-credit').textContent='Foto: Wikimedia Commons'; } }catch(e){}
+  try{ const src=await wikiImg('Tower_Bridge',960); if(src){ $('#hero').style.backgroundImage=`url("${src}")`; $('#hero-credit').textContent='Foto: Wikimedia Commons'; } }catch(e){}
 }
 
 /* ---------- Weather (Open-Meteo) ---------- */
@@ -1465,7 +1505,7 @@ function renderPlaces(){
         </div>
       </div></article>`;
   }).join('') : `<p class="muted mt">${L({es:'No hay lugares con ese filtro.',en:'No places match.'})}</p>`;
-  list.forEach(async p=>{ try{ const src=await wikiImg(p.w,640); const el=document.getElementById('pimg-'+p.id); if(src&&el){ const fb=el.querySelector('.ph-fb'); if(fb) fb.outerHTML=`<img loading="lazy" alt="${esc(p.n)}" src="${src}" onerror="this.remove()">`; } }catch(e){} });
+  wikiBatch(list.map(p=>p.w)).then(()=>list.forEach(async p=>{ try{ const src=await wikiImg(p.w,500,p.n+' London'); const el=document.getElementById('pimg-'+p.id); if(src&&el){ const fb=el.querySelector('.ph-fb'); if(fb) fb.outerHTML=`<img alt="${esc(p.n)}" src="${src}" referrerpolicy="no-referrer">`; } }catch(e){} }));
   $('#itins').innerHTML = ITINS.map(it=>`<button class="tile" onclick="showItin('${it.id}')"><span class="em">${it.ic}</span><b>${L(it.n)}</b><small>${L(it.s)} · ${it.stops.length} ${L({es:'paradas',en:'stops'})}</small><small class="muted">${it.stops.map(id=>LUGARES.find(p=>p.id===id).n).join(' → ')}</small></button>`).join('');
 }
 function toggleMine(id){ const m=plMine(); m[id] = !m[id]?'want': m[id]==='want'?'done':undefined; if(!m[id]) delete m[id]; store.set('pl',m); renderPlaces(); toast(m[id]==='want'?'❤️ '+L({es:'Guardado en "Quiero ir"',en:'Saved to "Want to go"'}):m[id]==='done'?'✅ '+L({es:'Marcado como visitado',en:'Marked visited'}):L({es:'Quitado de tu lista',en:'Removed'})); }
@@ -1501,7 +1541,7 @@ async function openPlace(id){
     </div>
    </div>`;
   $('#pl-modal').classList.add('on'); document.body.style.overflow='hidden';
-  wikiImg(p.w,1000).then(src=>{ if(src) $('#sheet-img').style.backgroundImage=`url("${src}")`; }).catch(()=>{});
+  wikiImg(p.w,960,p.n+' London').then(src=>{ if(src) $('#sheet-img').style.backgroundImage=`url("${src}")`; }).catch(()=>{});
   const ws=await wikiSummary(p);
   const box=$('#sheet-wiki'); if(!box) return;
   box.innerHTML = ws ? `<h3>📖 ${L({es:'Un poco de historia',en:'A bit of history'})}</h3><p class="small mt">${esc(ws.x)}</p>${ws.u?`<a class="small" href="${ws.u}" target="_blank" rel="noopener">Wikipedia →</a>`:''}` : '';
