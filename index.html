@@ -87,6 +87,7 @@ section.view.on{display:block}
 .card.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
 .card.red{background:var(--red);color:#fff;border-color:var(--red)}
 .tile{display:flex;flex-direction:column;gap:6px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);transition:transform .15s}
+.tile.hot{border:2px solid var(--red);background:#FFF5F6}
 .tile:active{transform:scale(.98)}
 .tile .em{font-size:1.6rem}
 .tile b{font-family:'Barlow Condensed';font-size:1.1rem;text-transform:uppercase}
@@ -212,6 +213,38 @@ details.acc ol li{margin:5px 0}
 .vlink{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--ink)}
 .vlink .play{flex:none;width:44px;height:44px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center}
 
+
+/* Lugares */
+.stat{background:var(--bg-2);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-family:'Barlow Condensed';font-size:1.6rem;font-weight:800;color:var(--red)}
+.stat small{font-size:.75rem;color:var(--muted)}
+.places{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.plc{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.plc-img{position:relative;aspect-ratio:16/9;background:var(--bg-2);cursor:pointer}
+.plc-img img{width:100%;height:100%;object-fit:cover;display:block}
+.plc-img .ph-fb{height:100%;display:grid;place-items:center;font-size:2rem;opacity:.4}
+.plc-mark{position:absolute;left:8px;top:8px;background:#fff;color:var(--ink);font-weight:700;font-size:.75rem;padding:3px 8px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.plc-body{padding:12px 14px 14px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2500;display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.sheet{background:#fff;width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0}
+@media(min-width:700px){.modal{align-items:center}.sheet{border-radius:18px}}
+.sheet-img{position:relative;height:240px;background:#222 center/cover no-repeat}
+.sheet-x{position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:1rem}
+.num{width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;display:grid;place-items:center;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+/* Salud */
+.ladder{display:grid;gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+.step .sn{flex:none;width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font-size:1.3rem}
+/* Clima */
+.clim{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:12px;padding-top:22px;align-items:end}
+.cl{text-align:center;cursor:pointer}
+.cl .bar-wrap{height:110px;display:flex;align-items:flex-end}
+.cbar{width:100%;background:#F5B2B8;border-radius:6px 6px 0 0;position:relative;min-height:18px}
+.cbar span{position:absolute;top:-18px;left:0;right:0;font-size:.7rem;font-weight:700}
+.cl.on .cbar{background:var(--red)}
+.cl small{font-size:.66rem;color:var(--muted)}
+
 /* Panel (sub pages) */
 .back{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ink);background:none;border:0;margin-bottom:10px;font-size:.95rem}
 
@@ -272,12 +305,18 @@ footer.foot b{color:var(--ink)}
   <div class="notice" id="fare-alert"></div>
 
   <div class="grid g3 mt">
+    <button class="tile hot" onclick="go('places')"><span class="em">🏰</span><b data-t="tPlaces">Lugares de interés</b><small data-t="tPlacesS">Qué conocer, gratis y de pago</small></button>
     <button class="tile" onclick="go('map')"><span class="em">🗺️</span><b data-t="tMap">Mapa</b><small data-t="tMapS">Ayuda, hospitales, barrios latinos</small></button>
     <button class="tile" onclick="go('transit')"><span class="em">🚇</span><b data-t="tTransit">Metro y bus</b><small data-t="tTransitS">En vivo, rutas y tarifas 2026</small></button>
     <button class="tile" onclick="go('phrases')"><span class="em">💬</span><b data-t="tPhrases">Frases</b><small data-t="tPhrasesS">Conversaciones con audio</small></button>
     <button class="tile" onclick="go('sos')"><span class="em">🆘</span><b data-t="tSos">Ayuda / SOS</b><small data-t="tSosS">Emergencias y asesoría</small></button>
     <button class="tile" onclick="go('first')"><span class="em">✅</span><b data-t="tFirst">Primeros días</b><small data-t="tFirstS">Lista paso a paso</small></button>
+    <button class="tile" onclick="go('health')"><span class="em">🩺</span><b data-t="tHealth">Salud (NHS)</b><small data-t="tHealthS">Médico, farmacia, urgencias</small></button>
+    <button class="tile" onclick="go('work')"><span class="em">💼</span><b data-t="tWork">Trabajo y estudio</b><small data-t="tWorkS">Derechos, inglés, calculadora</small></button>
+    <button class="tile" onclick="go('housing')"><span class="em">🏠</span><b data-t="tHousing">Vivienda</b><small data-t="tHousingS">Arrendar sin estafas</small></button>
+    <button class="tile" onclick="go('food')"><span class="em">🫓</span><b data-t="tFood">Comida latina</b><small data-t="tFoodS">Sabor de casa y supermercado</small></button>
     <button class="tile" onclick="go('money')"><span class="em">💷</span><b data-t="tMoney">Dinero</b><small data-t="tMoneyS">Cambio en vivo y salario</small></button>
+    <button class="tile" onclick="go('pack')"><span class="em">🧥</span><b data-t="tPack">Clima y maleta</b><small data-t="tPackS">Ropa por mes y festivos</small></button>
     <button class="tile" onclick="go('culture')"><span class="em">☕</span><b data-t="tCulture">Costumbres</b><small data-t="tCultureS">Cómo se comportan los ingleses</small></button>
     <button class="tile" onclick="go('safety')"><span class="em">🛡️</span><b data-t="tSafety">Seguridad</b><small data-t="tSafetyS">Robos, estafas y taxis</small></button>
     <button class="tile" onclick="go('media')"><span class="em">📸</span><b data-t="tMedia">Fotos y videos</b><small data-t="tMediaS">Conoce la ciudad antes de ir</small></button>
@@ -445,6 +484,90 @@ footer.foot b{color:var(--ink)}
   <div class="grid g2 mt" id="vlinks"></div>
 </section>
 
+<!-- ================= LUGARES DE INTERÉS ================= -->
+<section class="view" id="v-places">
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tPlaces">Lugares de interés</h2><p data-t="placesSub">Qué conocer en Londres: fotos reales, cómo llegar y cuáles son gratis.</p></div></div>
+  <div class="grid g3 keep" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat"><b id="st-total">0</b><small data-t="stTotal">lugares</small></div>
+    <div class="stat"><b id="st-free">0</b><small data-t="stFree">gratis</small></div>
+    <div class="stat"><b id="st-mine">0/0</b><small data-t="stMine">quiero ir / ya fui</small></div>
+  </div>
+  <div class="row mt"><input id="pl-q" placeholder="Buscar: museo, puente, mercado…"><button class="btn red" onclick="sortNear()" data-t="nearMe">📍 Cerca</button></div>
+  <div class="chips mt" id="pl-chips"></div>
+  <div class="places" id="places"></div>
+
+  <div class="sec-head"><div><h2 data-t="itinT">Itinerarios listos</h2><p data-t="itinS">Recorridos de un día. Toca para verlos dibujados en el mapa.</p></div></div>
+  <div class="grid g2" id="itins"></div>
+</section>
+
+<!-- ================= SALUD ================= -->
+<section class="view" id="v-health">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tHealth">Salud (NHS)</h2><p data-t="healthSub">A dónde ir según lo que te pase.</p></div></div>
+  <div class="ladder" id="ladder"></div>
+  <div id="health-acc" class="mt2"></div>
+</section>
+
+<!-- ================= TRABAJO ================= -->
+<section class="view" id="v-work">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tWork">Trabajo y estudio</h2><p data-t="workSub">Tus derechos, el inglés y cómo no caer en trampas.</p></div></div>
+  <div class="card">
+    <h3 data-t="payT">🧮 Calculadora de pago</h3>
+    <div class="grid g2 keep" style="grid-template-columns:1fr 1fr">
+      <div><label class="f" data-t="payRate">Pago por hora (£)</label><input id="pay-rate" type="number" step="0.01" value="12.71" inputmode="decimal"></div>
+      <div><label class="f" data-t="payHours">Horas por semana</label><input id="pay-hours" type="number" value="40" inputmode="numeric"></div>
+    </div>
+    <div class="mt" id="pay-out"></div>
+  </div>
+  <div id="work-acc" class="mt"></div>
+</section>
+
+<!-- ================= VIVIENDA ================= -->
+<section class="view" id="v-housing">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tHousing">Vivienda</h2><p data-t="housingSub">Cómo buscar habitación sin que te estafen.</p></div></div>
+  <div class="card red"><h3 data-t="redFlagsT">🚩 Señales de estafa</h3><ul class="dots small mt" id="redflags"></ul></div>
+  <div id="housing-acc" class="mt"></div>
+  <div class="card mt"><h3 data-t="viewT">📝 Antes de firmar, revisa</h3><div id="viewlist" class="mt"></div></div>
+</section>
+
+<!-- ================= COMIDA LATINA ================= -->
+<section class="view" id="v-food">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tFood">Comida latina</h2><p data-t="foodSub">Dónde conseguir el sabor de casa y cómo se dicen los productos.</p></div></div>
+  <div class="grid g2" id="food-areas"></div>
+  <div class="sec-head"><div><h2 data-t="foodWordsT">En el supermercado</h2><p data-t="foodWordsS">Así se llaman las cosas en inglés británico.</p></div></div>
+  <div class="card"><table class="fares" id="food-words"></table></div>
+  <div class="notice mt" data-t="foodTip">💡 En los supermercados grandes (Tesco, Sainsbury's, Asda) busca el pasillo <b>"World Foods"</b>: muchas veces tienen harina PAN, frijoles y plátano.</div>
+</section>
+
+<!-- ================= CLIMA Y MALETA ================= -->
+<section class="view" id="v-pack">
+  <button class="back" onclick="go('home')">← <span data-t="back">Volver</span></button>
+  <div class="sec-head" style="margin-top:0"><div><h2 data-t="tPack">Clima, maleta y festivos</h2><p data-t="packSub">Qué ropa llevar según el mes y cuándo cierra todo.</p></div></div>
+  <div class="card">
+    <label class="f" data-t="monthQ">¿En qué mes viajas?</label>
+    <select id="pack-month"></select>
+    <div id="pack-out" class="mt"></div>
+  </div>
+  <div class="card mt">
+    <h3 data-t="climT">🌡️ Temperatura promedio en Londres</h3>
+    <div class="clim" id="clim"></div>
+    <p class="small muted mt" data-t="climS">Máxima / mínima promedio en °C. En Caucasia el promedio pasa de 30 °C: prepárate.</p>
+  </div>
+  <div class="card mt">
+    <h3 data-t="holT">📅 Próximos festivos (bank holidays)</h3>
+    <p class="small muted" data-t="holS">Bancos y oficinas cierran; el transporte funciona con horario de domingo.</p>
+    <div id="hols" class="mt"></div>
+  </div>
+</section>
+
+<!-- Ficha de lugar -->
+<div class="modal" id="pl-modal" onclick="if(event.target===this)closePlace()">
+  <div class="sheet" id="pl-sheet"></div>
+</div>
+
 </main>
 
 <footer class="foot">
@@ -455,7 +578,7 @@ footer.foot b{color:var(--ink)}
 
 <nav class="tabs">
   <button data-v="home" class="on" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span data-t="nHome">Inicio</span></button>
-  <button data-v="map" onclick="go('map')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/></svg><span data-t="nMap">Mapa</span></button>
+  <button data-v="places" onclick="go('places')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span data-t="nPlaces">Lugares</span></button>
   <button data-v="sos" class="sos" onclick="go('sos')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></span><em data-t="nSos">SOS</em></button>
   <button data-v="transit" onclick="go('transit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l2-4M16 21l-2-4"/><circle cx="9" cy="14" r=".5"/><circle cx="15" cy="14" r=".5"/></svg><span data-t="nTransit">Transporte</span></button>
   <button data-v="phrases" onclick="go('phrases')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span data-t="nPhrases">Frases</span></button>
@@ -490,6 +613,24 @@ const T = {
   heroKicker:{es:'Recién llegado',en:'Just arrived'},
   heroTitle:{es:'Bienvenido a Londres',en:'Welcome to London'},
   heroText:{es:'Mapa, metro y buses en vivo, ayuda en español, frases para cada situación y todo lo que necesitas en tus primeros días.',en:'Map, live Tube and buses, help in Spanish, phrases for every situation and everything you need in your first days.'},
+
+  tPlaces:{es:'Lugares de interés',en:'Places to visit'}, tPlacesS:{es:'Qué conocer, gratis y de pago',en:'What to see, free and paid'},
+  placesSub:{es:'Qué conocer en Londres: fotos reales, cómo llegar y cuáles son gratis.',en:'What to see in London: real photos, directions and what\'s free.'},
+  stTotal:{es:'lugares',en:'places'}, stFree:{es:'gratis',en:'free'}, stMine:{es:'quiero ir / ya fui',en:'want / visited'},
+  nearMe:{es:'📍 Cerca',en:'📍 Near me'}, itinT:{es:'Itinerarios listos',en:'Ready-made itineraries'}, itinS:{es:'Recorridos de un día. Toca para verlos dibujados en el mapa.',en:'One-day routes. Tap to see them on the map.'},
+  nPlaces:{es:'Lugares',en:'Places'},
+  tHealth:{es:'Salud (NHS)',en:'Health (NHS)'}, tHealthS:{es:'Médico, farmacia, urgencias',en:'GP, pharmacy, A&E'}, healthSub:{es:'A dónde ir según lo que te pase.',en:'Where to go depending on what happens.'},
+  tWork:{es:'Trabajo y estudio',en:'Work & study'}, tWorkS:{es:'Derechos, inglés, calculadora',en:'Rights, English, pay calculator'}, workSub:{es:'Tus derechos, el inglés y cómo no caer en trampas.',en:'Your rights, English and avoiding traps.'},
+  payT:{es:'🧮 Calculadora de pago',en:'🧮 Pay calculator'}, payRate:{es:'Pago por hora (£)',en:'Hourly pay (£)'}, payHours:{es:'Horas por semana',en:'Hours per week'},
+  tHousing:{es:'Vivienda',en:'Housing'}, tHousingS:{es:'Arrendar sin estafas',en:'Renting without scams'}, housingSub:{es:'Cómo buscar habitación sin que te estafen.',en:'How to find a room safely.'},
+  redFlagsT:{es:'🚩 Señales de estafa',en:'🚩 Scam red flags'}, viewT:{es:'📝 Antes de firmar, revisa',en:'📝 Check before signing'},
+  tFood:{es:'Comida latina',en:'Latin food'}, tFoodS:{es:'Sabor de casa y supermercado',en:'Taste of home & groceries'}, foodSub:{es:'Dónde conseguir el sabor de casa y cómo se dicen los productos.',en:'Where to find home flavours and product names.'},
+  foodWordsT:{es:'En el supermercado',en:'At the supermarket'}, foodWordsS:{es:'Así se llaman las cosas en inglés británico.',en:'British names for everyday items.'},
+  foodTip:{es:'💡 En los supermercados grandes (Tesco, Sainsbury\'s, Asda) busca el pasillo <b>"World Foods"</b>: muchas veces tienen harina para arepas, fríjoles y plátano.',en:'💡 Big supermarkets have a <b>"World Foods"</b> aisle with arepa flour, beans and plantain.'},
+  tPack:{es:'Clima y maleta',en:'Weather & packing'}, tPackS:{es:'Ropa por mes y festivos',en:'Clothes by month & holidays'}, packSub:{es:'Qué ropa llevar según el mes y cuándo cierra todo.',en:'What to pack by month and when things close.'},
+  monthQ:{es:'¿En qué mes viajas?',en:'Which month are you travelling?'}, climT:{es:'🌡️ Temperatura promedio en Londres',en:'🌡️ Average temperature in London'},
+  climS:{es:'Máxima / mínima promedio en °C. En Caucasia el promedio pasa de 30 °C: prepárate.',en:'Average high/low in °C.'},
+  holT:{es:'📅 Próximos festivos (bank holidays)',en:'📅 Upcoming bank holidays'}, holS:{es:'Bancos y oficinas cierran; el transporte funciona con horario de domingo.',en:'Banks and offices close; transport runs a Sunday-style service.'},
   tMap:{es:'Mapa',en:'Map'}, tMapS:{es:'Ayuda, hospitales, barrios latinos',en:'Help, hospitals, Latin areas'},
   tTransit:{es:'Metro y bus',en:'Tube & bus'}, tTransitS:{es:'En vivo, rutas y tarifas 2026',en:'Live, routes and 2026 fares'},
   tPhrases:{es:'Frases',en:'Phrases'}, tPhrasesS:{es:'Conversaciones con audio',en:'Dialogues with audio'},
@@ -552,7 +693,8 @@ function applyLang(){
     'my-addr':{es:'Ej: 25 Coldharbour Lane, SW9 8PR',en:'e.g. 25 Coldharbour Lane, SW9 8PR'},
     'j-from':{es:'Estación, lugar o código postal',en:'Station, place or postcode'},
     'j-to':{es:'Ej: Elephant & Castle, Big Ben, SW9 8PR',en:'e.g. Elephant & Castle, Big Ben, SW9 8PR'},
-    'arr-q':{es:'Ej: Brixton, Oxford Circus',en:'e.g. Brixton, Oxford Circus'}
+    'arr-q':{es:'Ej: Brixton, Oxford Circus',en:'e.g. Brixton, Oxford Circus'},
+    'pl-q':{es:'Buscar: museo, puente, mercado…',en:'Search: museum, bridge, market…'}
   };
   for(const id in ph){ const el=document.getElementById(id); if(el) el.placeholder=L(ph[id]); }
 }
@@ -740,7 +882,7 @@ const CATS = {
   help:{ic:'🤝',c:'#EB0A1E',n:{es:'Ayuda',en:'Help'}},
   health:{ic:'🏥',c:'#0067B1',n:{es:'Urgencias',en:'A&E'}},
   latino:{ic:'🫓',c:'#F2A900',n:{es:'Barrios latinos',en:'Latin areas'}},
-  sights:{ic:'📸',c:'#0B0B0C',n:{es:'Lugares',en:'Sights'}},
+  sights:{ic:'🏰',c:'#0B0B0C',n:{es:'Lugares de interés',en:'Places to visit'}},
   air:{ic:'✈️',c:'#6E6E76',n:{es:'Aeropuertos',en:'Airports'}}
 };
 const PLACES = [
@@ -753,19 +895,7 @@ const PLACES = [
   {cat:'health',n:"King's College Hospital (A&E)",lat:51.4682,lng:-0.0938,a:'Denmark Hill, London SE5 9RS',d:{es:'Urgencias 24 horas, sur de Londres (cerca de Brixton y Camberwell).',en:'24h emergency department, south London.'}},
   {cat:'health',n:'Royal London Hospital (A&E)',lat:51.5185,lng:-0.0597,a:'Whitechapel Road, London E1 1FR',d:{es:'Urgencias 24 horas, este de Londres.',en:'24h emergency department, east London.'}},
   {cat:'health',n:"St Mary's Hospital (A&E)",lat:51.5171,lng:-0.1738,a:'Praed Street, London W2 1NY',d:{es:'Urgencias 24 horas, Paddington (oeste).',en:'24h emergency department, Paddington.'}},
-  {cat:'latino',n:'Elephant & Castle',lat:51.4946,lng:-0.1003,d:{es:'Corazón histórico de la comunidad latina: restaurantes, envíos de dinero, tiendas colombianas y ecuatorianas.',en:'Historic heart of the Latin community: restaurants, money transfer and Colombian shops.'}},
-  {cat:'latino',n:'Brixton Market & Brixton Village',lat:51.4625,lng:-0.1129,d:{es:'Mercado multicultural con productos latinos, carnicerías y comida de toda Sudamérica.',en:'Multicultural market with Latin produce and food.'}},
-  {cat:'latino',n:'Seven Sisters',lat:51.5822,lng:-0.0749,d:{es:'Zona del norte con muchos negocios latinos y colombianos.',en:'North London area with many Latin businesses.'}},
   {cat:'latino',n:'Kilburn',lat:51.5472,lng:-0.1919,d:{es:'Casa Latina y una comunidad hispanohablante activa.',en:'Home of Latin American House.'}},
-  {cat:'sights',n:'Big Ben',w:'Big_Ben',lat:51.5007,lng:-0.1246,d:{es:'Torre del reloj del Parlamento.',en:'The Parliament clock tower.'}},
-  {cat:'sights',n:'Tower Bridge',w:'Tower_Bridge',lat:51.5055,lng:-0.0754,d:{es:'El puente más famoso de Londres.',en:'London\'s most famous bridge.'}},
-  {cat:'sights',n:'London Eye',w:'London_Eye',lat:51.5033,lng:-0.1196,d:{es:'La gran rueda a orillas del Támesis.',en:'The giant wheel on the Thames.'}},
-  {cat:'sights',n:'Buckingham Palace',w:'Buckingham_Palace',lat:51.5014,lng:-0.1419,d:{es:'Residencia del rey. Cambio de guardia en algunas mañanas.',en:'The King\'s residence.'}},
-  {cat:'sights',n:'British Museum',w:'British_Museum',lat:51.5194,lng:-0.1270,d:{es:'Museo gratuito con historia de todo el mundo.',en:'Free museum of world history.'}},
-  {cat:'sights',n:'Natural History Museum',w:'Natural_History_Museum,_London',lat:51.4967,lng:-0.1764,d:{es:'Gratis. Dinosaurios — ideal para niños.',en:'Free. Dinosaurs — great for kids.'}},
-  {cat:'sights',n:'Trafalgar Square',w:'Trafalgar_Square',lat:51.5080,lng:-0.1281,d:{es:'Plaza central y la National Gallery (gratis).',en:'Central square and the free National Gallery.'}},
-  {cat:'sights',n:'Camden Market',w:'Camden_Market',lat:51.5413,lng:-0.1463,d:{es:'Mercado alternativo con comida de todo el mundo.',en:'Alternative market with world food.'}},
-  {cat:'sights',n:'Hyde Park',w:'Hyde_Park,_London',lat:51.5073,lng:-0.1657,d:{es:'Parque gigante en el centro.',en:'Huge central park.'}},
   {cat:'air',n:'Heathrow',w:'Heathrow_Airport',lat:51.4700,lng:-0.4543,d:{es:'Aeropuerto principal (vuelos desde Bogotá). Piccadilly o Elizabeth line al centro.',en:'Main airport. Piccadilly or Elizabeth line to the centre.'}},
   {cat:'air',n:'Gatwick',lat:51.1537,lng:-0.1821,d:{es:'Al sur. Tren a Victoria o London Bridge.',en:'South. Train to Victoria or London Bridge.'}},
   {cat:'air',n:'Stansted',lat:51.8860,lng:0.2389,d:{es:'Al noreste. Vuelos baratos por Europa.',en:'North-east. Budget European flights.'}},
@@ -787,6 +917,7 @@ function initMap(){
     const html = `<b>${esc(p.n)}</b><br><span>${esc(L(p.d))}</span>${p.a?`<br><small>${esc(p.a)}</small>`:''}<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${p.tel?`<a class="btn sm red" style="color:#fff" href="tel:${p.tel}">📞 ${L({es:'Llamar',en:'Call'})}</a>`:''}${p.web?`<a class="btn sm" style="color:#fff" href="${p.web}" target="_blank" rel="noopener">🌐 Web</a>`:''}<a class="btn sm ghost" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" rel="noopener">🧭 ${L({es:'Cómo llegar',en:'Directions'})}</a></div>`;
     L_.marker([p.lat,p.lng],{icon:pinIcon(c.c,c.ic)}).bindPopup(html).addTo(layers[p.cat]);
   });
+  LUGARES.forEach(p=>{ L_.marker([p.lat,p.lng],{icon:pinIcon(p.c.includes('latino')?CATS.latino.c:CATS.sights.c,p.c.includes('latino')?'🫓':'🏰')}).addTo(layers[p.c.includes('latino')?'latino':'sights']).bindPopup(`<b>${esc(p.n)}</b><br><span>${esc(L(p.d))}</span><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm red" onclick="openPlace('${p.id}')">${L({es:'Ver más',en:'More'})}</button><button class="btn sm ghost" onclick="routeTo('${p.id}')">🧭 ${L({es:'Cómo llegar',en:'Directions'})}</button></div>`); });
   stopsLayer = L_.layerGroup().addTo(map);
   renderChips();
   setTimeout(()=>map.invalidateSize(),150);
@@ -1064,6 +1195,7 @@ async function loadRates(){
 }
 const fmt=(n,c)=>new Intl.NumberFormat(LANG==='es'?'es-CO':'en-GB',{style:'currency',currency:c,maximumFractionDigits:c==='COP'||c==='CLP'?0:2}).format(n);
 function renderFX(){
+  if(document.getElementById('pay-out')) try{renderPay();}catch(e){}
   const c=store.get('rates',null);
   if(!RATES){ $('#fx-main').innerHTML=`<span class="small muted">${L({es:'Sin conexión para tasas.',en:'No connection for rates.'})}</span>`; return; }
   $('#fx-main').innerHTML = `<div style="font-family:'Barlow Condensed';font-size:2rem;font-weight:800">£1 = ${fmt(RATES.COP,'COP')}</div><div class="small">£1 = ${fmt(RATES.USD,'USD')} · ${fmt(RATES.EUR,'EUR')}</div>`;
@@ -1176,6 +1308,344 @@ async function routeHome(){
 }
 function openShow(){ const a=store.get('addr',''); $('#show-addr').textContent = a || L({es:'(Guarda tu dirección en Inicio)',en:'(Save your address on Home)'}); $('#showcard').classList.add('on'); }
 
+
+/* =========================================================
+   LUGARES DE INTERÉS
+   free: 1 = gratis · 2 = gratis por fuera / parte de pago · 0 = de pago
+   ========================================================= */
+const PCATS = {
+  all:{ic:'⭐',n:{es:'Todos',en:'All'}}, free:{ic:'🆓',n:{es:'Gratis',en:'Free'}},
+  museo:{ic:'🏛️',n:{es:'Museos',en:'Museums'}}, monu:{ic:'👑',n:{es:'Monumentos',en:'Landmarks'}},
+  parque:{ic:'🌳',n:{es:'Parques',en:'Parks'}}, mercado:{ic:'🛍️',n:{es:'Mercados',en:'Markets'}},
+  vista:{ic:'🌆',n:{es:'Miradores',en:'Viewpoints'}}, ninos:{ic:'🧒',n:{es:'Con niños',en:'With kids'}},
+  latino:{ic:'🫓',n:{es:'Latino',en:'Latin'}}, fav:{ic:'❤️',n:{es:'Mis lugares',en:'My places'}}
+};
+const LUGARES = [
+ {id:'bm',n:'British Museum',w:'British_Museum',es:'Museo_Británico',lat:51.5194,lng:-0.1270,c:['museo','ninos'],free:1,st:'Tottenham Court Road / Holborn',web:'https://www.britishmuseum.org',
+  d:{es:'Uno de los museos más grandes del mundo: momias egipcias, la Piedra de Rosetta y arte de todos los continentes, incluida una sala de América.',en:'One of the world\'s great museums: Egyptian mummies, the Rosetta Stone and art from every continent.'},
+  tip:{es:'Entrada gratis. Ve temprano entre semana; no alcanzas a verlo todo en un día, escoge 3 o 4 salas.',en:'Free. Go early on a weekday and pick 3–4 rooms.'}},
+ {id:'ng',n:'National Gallery',w:'National_Gallery',es:'National_Gallery',lat:51.5089,lng:-0.1283,c:['museo'],free:1,st:'Charing Cross',web:'https://www.nationalgallery.org.uk',
+  d:{es:'Pinturas de Van Gogh (Los girasoles), Velázquez, Leonardo y Monet, frente a Trafalgar Square.',en:'Van Gogh\'s Sunflowers, Velázquez, Leonardo and Monet, on Trafalgar Square.'},
+  tip:{es:'Gratis. Combínala con Trafalgar Square y caminar a Covent Garden.',en:'Free. Combine with Trafalgar Square and Covent Garden.'}},
+ {id:'nhm',n:'Natural History Museum',w:'Natural_History_Museum,_London',es:'Museo_de_Historia_Natural_de_Londres',lat:51.4967,lng:-0.1764,c:['museo','ninos'],free:1,st:'South Kensington',web:'https://www.nhm.ac.uk',
+  d:{es:'Dinosaurios, una ballena azul colgando del techo y un edificio que parece una catedral. El favorito de los niños.',en:'Dinosaurs, a blue whale skeleton and a cathedral-like building. Kids\' favourite.'},
+  tip:{es:'Gratis. Hay fila en la mañana; la entrada por Exhibition Road suele ser más rápida.',en:'Free. The Exhibition Road entrance is often quicker.'}},
+ {id:'sci',n:'Science Museum',w:'Science_Museum,_London',es:'Museo_de_Ciencias_de_Londres',lat:51.4978,lng:-0.1745,c:['museo','ninos'],free:1,st:'South Kensington',web:'https://www.sciencemuseum.org.uk',
+  d:{es:'Cohetes, máquinas de vapor y salas interactivas. Al lado del de Historia Natural.',en:'Rockets, steam engines and interactive galleries.'},
+  tip:{es:'Gratis la entrada general; algunas salas interactivas y el cine IMAX se pagan.',en:'Free general entry; some galleries and IMAX are paid.'}},
+ {id:'va',n:'Victoria and Albert Museum',w:'Victoria_and_Albert_Museum',es:'Museo_Victoria_y_Alberto',lat:51.4966,lng:-0.1722,c:['museo'],free:1,st:'South Kensington',web:'https://www.vam.ac.uk',
+  d:{es:'Diseño, moda, joyas y arte decorativo. Tiene un patio con fuente muy agradable.',en:'Design, fashion, jewellery and decorative arts.'},
+  tip:{es:'Gratis. Los tres museos de South Kensington se pueden ver en un mismo día.',en:'Free. All three South Kensington museums fit in one day.'}},
+ {id:'tate',n:'Tate Modern',w:'Tate_Modern',es:'Tate_Modern',lat:51.5076,lng:-0.0994,c:['museo','vista'],free:1,st:'Blackfriars / Southwark',web:'https://www.tate.org.uk/visit/tate-modern',
+  d:{es:'Arte moderno en una antigua central eléctrica. Desde el piso 10 hay vista gratis sobre el Támesis y San Pablo.',en:'Modern art in a former power station, with a free 10th-floor view.'},
+  tip:{es:'Gratis (algunas exposiciones temporales se pagan). Sal por el Puente del Milenio hacia San Pablo.',en:'Free (some exhibitions paid). Cross the Millennium Bridge to St Paul\'s.'}},
+ {id:'sky',n:'Sky Garden',w:'20_Fenchurch_Street',es:'20_Fenchurch_Street',lat:51.5113,lng:-0.0836,c:['vista'],free:1,st:'Monument',web:'https://skygarden.london',
+  d:{es:'Jardín en los pisos 35 a 37 de un rascacielos, con una de las mejores vistas de Londres.',en:'A garden on floors 35–37 of a skyscraper with superb views.'},
+  tip:{es:'Gratis pero SOLO con reserva en la web oficial (no se puede llegar sin tiquete). Los cupos de atardecer en fin de semana se agotan: reserva unas 3 semanas antes y lleva documento.',en:'Free but booking required on the official site. Book ~3 weeks ahead and bring ID.'}},
+ {id:'bigben',n:'Big Ben y Parlamento',w:'Big_Ben',es:'Big_Ben',lat:51.5007,lng:-0.1246,c:['monu'],free:2,st:'Westminster',web:'https://www.parliament.uk/visiting/',
+  d:{es:'La torre del reloj más famosa del mundo y el Palacio de Westminster, a orillas del río.',en:'The world\'s most famous clock tower and the Palace of Westminster.'},
+  tip:{es:'Verlo por fuera es gratis. La mejor foto: desde el puente de Westminster o desde la otra orilla.',en:'Free from outside. Best photo from Westminster Bridge or across the river.'}},
+ {id:'abbey',n:'Westminster Abbey',w:'Westminster_Abbey',es:'Abadía_de_Westminster',lat:51.4993,lng:-0.1273,c:['monu'],free:0,st:'Westminster / St James\'s Park',web:'https://www.westminster-abbey.org',
+  d:{es:'Donde se coronan los reyes y se casó el príncipe Guillermo. Arquitectura gótica impresionante.',en:'Where monarchs are crowned. Stunning Gothic architecture.'},
+  tip:{es:'De pago para turistas. Truco: asistir a una misa o al servicio de "Evensong" es gratis (no se pueden tomar fotos).',en:'Paid entry; attending a service or Evensong is free.'}},
+ {id:'buck',n:'Buckingham Palace',w:'Buckingham_Palace',es:'Palacio_de_Buckingham',lat:51.5014,lng:-0.1419,c:['monu','ninos'],free:2,st:'Green Park / St James\'s Park / Victoria',web:'https://www.householddivision.org.uk/changing-the-guard-calendar',
+  d:{es:'Residencia oficial del rey. El cambio de guardia es gratis y se ve desde la reja.',en:'The King\'s official residence. Changing the Guard is free to watch.'},
+  tip:{es:'Cambio de guardia a las 11:00, solo ciertos días: revisa el calendario oficial (botón Web). Llega 45 minutos antes para coger buen puesto.',en:'Changing the Guard at 11:00 on scheduled days — check the official calendar. Arrive 45 min early.'}},
+ {id:'tower',n:'Tower of London',w:'Tower_of_London',es:'Torre_de_Londres',lat:51.5081,lng:-0.0759,c:['monu','ninos'],free:0,st:'Tower Hill',web:'https://www.hrp.org.uk/tower-of-london/',
+  d:{es:'Castillo de casi 1.000 años donde están las Joyas de la Corona y los cuervos que, según la leyenda, protegen el reino.',en:'A 1,000-year-old castle holding the Crown Jewels.'},
+  tip:{es:'De pago: compra en línea, sale más barato que en la taquilla. Únete a la visita gratis de los guardias "Beefeaters".',en:'Paid: cheaper online. Join the free Beefeater tour.'}},
+ {id:'tbridge',n:'Tower Bridge',w:'Tower_Bridge',es:'Puente_de_la_Torre',lat:51.5055,lng:-0.0754,c:['monu','vista'],free:2,st:'Tower Hill / London Bridge',web:'https://www.towerbridge.org.uk',
+  d:{es:'El puente más fotografiado de Londres. A veces se levanta para dejar pasar barcos.',en:'London\'s most photographed bridge; it still lifts for ships.'},
+  tip:{es:'Cruzarlo a pie es gratis. Arriba hay una pasarela con piso de vidrio que sí se paga.',en:'Walking across is free; the glass-floor walkway is paid.'}},
+ {id:'eye',n:'London Eye',w:'London_Eye',es:'London_Eye',lat:51.5033,lng:-0.1196,c:['vista','ninos'],free:0,st:'Waterloo / Westminster',web:'https://www.londoneye.com',
+  d:{es:'La rueda gigante a orillas del Támesis: 30 minutos con vista a Big Ben y toda la ciudad.',en:'The giant wheel on the Thames: 30 minutes over the city.'},
+  tip:{es:'De pago; en línea es más barato. Si quieres vista gratis, mejor el Sky Garden.',en:'Paid; cheaper online. For a free view, try Sky Garden.'}},
+ {id:'stpauls',n:'St Paul\'s Cathedral',w:'St_Paul\'s_Cathedral',es:'Catedral_de_San_Pablo_(Londres)',lat:51.5138,lng:-0.0984,c:['monu','vista'],free:0,st:'St Paul\'s',web:'https://www.stpauls.co.uk',
+  d:{es:'Su cúpula domina el centro. Subiendo 528 escalones tienes una vista de 360°.',en:'Its dome dominates the City; 528 steps to a 360° view.'},
+  tip:{es:'De pago para turistas; la misa y el Evensong son gratis. Afuera, las escaleras son un buen sitio para descansar.',en:'Paid for sightseeing; services are free.'}},
+ {id:'mill',n:'Millennium Bridge',w:'Millennium_Bridge,_London',es:'Puente_del_Milenio_(Londres)',lat:51.5095,lng:-0.0985,c:['vista'],free:1,st:'St Paul\'s / Blackfriars',web:'',
+  d:{es:'Puente peatonal de acero entre San Pablo y la Tate Modern. Sale en una película de Harry Potter.',en:'Steel footbridge between St Paul\'s and Tate Modern.'},
+  tip:{es:'Gratis. Mejor foto: desde el lado de la Tate, con la cúpula de San Pablo al fondo.',en:'Free. Best shot from the Tate side.'}},
+ {id:'traf',n:'Trafalgar Square',w:'Trafalgar_Square',es:'Trafalgar_Square',lat:51.5080,lng:-0.1281,c:['monu'],free:1,st:'Charing Cross',web:'',
+  d:{es:'La plaza central de Londres, con la columna de Nelson y los leones. Aquí se hacen conciertos y celebraciones.',en:'London\'s central square with Nelson\'s Column.'},
+  tip:{es:'Gratis. Desde aquí caminas a la National Gallery, Covent Garden, Piccadilly y Big Ben.',en:'Free. Walkable to the main sights.'}},
+ {id:'picc',n:'Piccadilly Circus',w:'Piccadilly_Circus',es:'Piccadilly_Circus',lat:51.5101,lng:-0.1340,c:['monu'],free:1,st:'Piccadilly Circus',web:'',
+  d:{es:'Las pantallas gigantes de Londres, al lado de Leicester Square, Chinatown y el Soho.',en:'London\'s giant screens, next to Chinatown and Soho.'},
+  tip:{es:'Gratis. De noche es más bonito. Cuida el celular y la billetera: hay muchos carteristas.',en:'Free. Watch for pickpockets.'}},
+ {id:'covent',n:'Covent Garden',w:'Covent_Garden',es:'Covent_Garden',lat:51.5117,lng:-0.1240,c:['mercado','ninos'],free:1,st:'Covent Garden / Leicester Square',web:'https://www.coventgarden.london',
+  d:{es:'Mercado cubierto con artistas callejeros, tiendas y cafés. Ambiente muy alegre.',en:'Covered market with street performers and cafés.'},
+  tip:{es:'La estación Covent Garden es muy profunda y se llena; es más fácil bajarse en Leicester Square y caminar 5 minutos.',en:'Leicester Square station is easier than Covent Garden.'}},
+ {id:'borough',n:'Borough Market',w:'Borough_Market',es:'Borough_Market',lat:51.5055,lng:-0.0910,c:['mercado'],free:1,st:'London Bridge',web:'https://boroughmarket.org.uk',
+  d:{es:'El mercado de comida más famoso de Londres: quesos, panes, comida callejera de todo el mundo.',en:'London\'s most famous food market.'},
+  tip:{es:'Entrada libre. Ve con hambre entre semana al mediodía; el sábado está a reventar.',en:'Free entry. Go hungry on a weekday lunchtime.'}},
+ {id:'camden',n:'Camden Market',w:'Camden_Market',es:'Camden_Market',lat:51.5413,lng:-0.1463,c:['mercado'],free:1,st:'Camden Town / Chalk Farm',web:'https://www.camdenmarket.com',
+  d:{es:'Mercado alternativo junto al canal: ropa, música, comida de todo el mundo (también latina).',en:'Alternative canal-side market with world food.'},
+  tip:{es:'El domingo la estación Camden Town solo deja salir a cierta hora: usa Chalk Farm. Camina por el canal hasta Little Venice.',en:'Use Chalk Farm on busy days; walk the canal to Little Venice.'}},
+ {id:'portobello',n:'Portobello Road (Notting Hill)',w:'Portobello_Road',es:'Portobello_Road',lat:51.5155,lng:-0.2050,c:['mercado'],free:1,st:'Notting Hill Gate / Ladbroke Grove',web:'',
+  d:{es:'Casas de colores y el mercado de antigüedades más famoso. Escenario de la película "Notting Hill".',en:'Colourful houses and a famous antiques market.'},
+  tip:{es:'El sábado es el día del mercado grande. Gratis.',en:'Saturday is the big market day.'}},
+ {id:'columbia',n:'Columbia Road Flower Market',w:'Columbia_Road',es:'Columbia_Road',lat:51.5291,lng:-0.0705,c:['mercado'],free:1,st:'Hoxton (Overground)',web:'https://www.columbiaroad.info',
+  d:{es:'Una calle entera llena de flores, solo los domingos por la mañana. Los vendedores gritan las ofertas.',en:'A street full of flowers on Sunday mornings.'},
+  tip:{es:'Solo domingos, más o menos de 8:00 a 15:00. Al final del día rebajan los precios.',en:'Sundays only; prices drop near closing.'}},
+ {id:'hyde',n:'Hyde Park y Kensington Gardens',w:'Hyde_Park,_London',es:'Hyde_Park',lat:51.5073,lng:-0.1657,c:['parque','ninos'],free:1,st:'Hyde Park Corner / Marble Arch / Lancaster Gate',web:'https://www.royalparks.org.uk',
+  d:{es:'Parque enorme con lago, botes, ardillas y el parque infantil de Diana con un barco pirata.',en:'Huge park with a lake, squirrels and the Diana playground.'},
+  tip:{es:'Gratis. En noviembre–enero monta "Winter Wonderland" (feria de Navidad; la entrada y las atracciones tienen costo según el día).',en:'Free. Winter Wonderland runs Nov–Jan (some charges).'}},
+ {id:'stjames',n:'St James\'s Park',w:'St_James\'s_Park',es:'St._James\'s_Park',lat:51.5025,lng:-0.1348,c:['parque','ninos'],free:1,st:'St James\'s Park',web:'https://www.royalparks.org.uk',
+  d:{es:'El parque más bonito del centro, con pelícanos y vista al palacio de Buckingham.',en:'Central London\'s prettiest park, with pelicans.'},
+  tip:{es:'Gratis. Perfecto para descansar entre Buckingham y Big Ben.',en:'Free. Rest stop between Buckingham and Big Ben.'}},
+ {id:'primrose',n:'Primrose Hill',w:'Primrose_Hill',es:'Primrose_Hill',lat:51.5394,lng:-0.1609,c:['parque','vista'],free:1,st:'Chalk Farm',web:'',
+  d:{es:'Colina con vista panorámica gratis del centro de Londres. Muy linda al atardecer.',en:'Hill with a free panoramic view of central London.'},
+  tip:{es:'Gratis. Combínala con Camden Market (10 minutos a pie).',en:'Free. 10 minutes\' walk from Camden.'}},
+ {id:'greenwich',n:'Greenwich',w:'Royal_Observatory,_Greenwich',es:'Real_Observatorio_de_Greenwich',lat:51.4769,lng:-0.0005,c:['parque','vista','ninos','museo'],free:2,st:'Cutty Sark (DLR) / barco por el río',web:'https://www.rmg.co.uk',
+  d:{es:'El meridiano 0 del mundo, un parque con gran vista, el barco Cutty Sark y el Museo Marítimo.',en:'The Prime Meridian, a park with a great view and the Cutty Sark.'},
+  tip:{es:'El parque y el Museo Marítimo son gratis; el Observatorio (para pararte en la línea del meridiano) se paga. Ir en barco por el Támesis es un paseo en sí mismo.',en:'Park and Maritime Museum free; Observatory paid. Take a river boat.'}},
+ {id:'kew',n:'Kew Gardens',w:'Royal_Botanic_Gardens,_Kew',es:'Real_Jardín_Botánico_de_Kew',lat:51.4787,lng:-0.2956,c:['parque','ninos'],free:0,st:'Kew Gardens',web:'https://www.kew.org',
+  d:{es:'Jardín botánico patrimonio de la humanidad, con invernaderos gigantes de plantas tropicales.',en:'World Heritage botanic garden with giant glasshouses.'},
+  tip:{es:'De pago; compra en línea. Plan de medio día o día completo.',en:'Paid; book online. Half or full day.'}},
+ {id:'little',n:'Little Venice',w:'Little_Venice',es:'Little_Venice',lat:51.5226,lng:-0.1836,c:['parque'],free:1,st:'Warwick Avenue',web:'',
+  d:{es:'Canales tranquilos con barcos de colores. Puedes caminar por el canal hasta Camden.',en:'Quiet canals with colourful narrowboats.'},
+  tip:{es:'Gratis. El paseo a pie hasta Camden por el canal toma como 1 hora.',en:'Free. The towpath walk to Camden takes about an hour.'}},
+ {id:'kings',n:'Andén 9¾ — King\'s Cross',w:'King\'s_Cross_railway_station',es:'Estación_de_King\'s_Cross',lat:51.5320,lng:-0.1233,c:['ninos'],free:2,st:'King\'s Cross St Pancras',web:'',
+  d:{es:'El carrito que atraviesa la pared, como en Harry Potter. Al lado hay una tienda temática.',en:'The Harry Potter trolley in the wall.'},
+  tip:{es:'Tomarte la foto tú mismo es gratis; la foto con bufanda tomada por el personal se paga. Hay fila los fines de semana.',en:'Your own photo is free; the staff photo is paid.'}},
+ {id:'abbeyrd',n:'Abbey Road',w:'Abbey_Road',es:'Abbey_Road',lat:51.5320,lng:-0.1779,c:['monu'],free:1,st:'St John\'s Wood',web:'',
+  d:{es:'El paso de cebra de la portada del disco de los Beatles.',en:'The zebra crossing from the Beatles album cover.'},
+  tip:{es:'Gratis. Es una calle con tráfico real: respeta a los carros al tomarte la foto.',en:'Free, but it\'s a real road — mind the traffic.'}},
+ {id:'globe',n:'Shakespeare\'s Globe',w:'Shakespeare\'s_Globe',es:'Globe_Theatre',lat:51.5081,lng:-0.0972,c:['monu'],free:0,st:'Blackfriars / London Bridge',web:'https://www.shakespearesglobe.com',
+  d:{es:'Réplica del teatro de Shakespeare, al aire libre, junto al río.',en:'Reconstruction of Shakespeare\'s open-air theatre.'},
+  tip:{es:'En temporada de verano venden entradas de pie ("groundling") a precio bajo. Las obras son en inglés antiguo.',en:'Cheap standing tickets in the summer season.'}},
+ {id:'elephant',n:'Elephant & Castle',w:'Elephant_and_Castle',es:'Elephant_and_Castle',lat:51.4946,lng:-0.1003,c:['latino'],free:1,st:'Elephant & Castle',web:'',
+  d:{es:'Corazón histórico de la comunidad latina de Londres: restaurantes, panaderías, giros de dinero y tiendas con productos colombianos.',en:'Historic heart of London\'s Latin American community.'},
+  tip:{es:'Pregunta por los negocios latinos de la zona: se habla español en casi todos.',en:'Spanish is spoken in most Latin businesses here.'}},
+ {id:'brixton',n:'Brixton Market y Brixton Village',w:'Brixton_Market',es:'Brixton',lat:51.4625,lng:-0.1129,c:['latino','mercado'],free:1,st:'Brixton',web:'https://brixtonmarket.net',
+  d:{es:'Mercado multicultural: frutas tropicales, plátano, yuca, carnicerías y comida de toda Sudamérica y el Caribe.',en:'Multicultural market with tropical produce and Latin food.'},
+  tip:{es:'Muy cerca está IRMO, la organización que asesora a latinos (ver SOS).',en:'IRMO (Latin advice centre) is nearby.'}},
+ {id:'seven',n:'Seven Sisters',w:'Seven_Sisters,_London',es:'Seven_Sisters_(Londres)',lat:51.5822,lng:-0.0749,c:['latino'],free:1,st:'Seven Sisters',web:'',
+  d:{es:'Zona del norte de Londres con muchos negocios latinos y colombianos.',en:'North London area with many Latin businesses.'},
+  tip:{es:'Buen lugar para encontrar productos de casa en el norte de la ciudad.',en:'Good for Latin groceries in the north.'}}
+];
+const ITINS = [
+ {id:'clasico',ic:'👑',n:{es:'Día clásico',en:'Classic day'},s:{es:'Lo imperdible, todo a pie',en:'Must-sees on foot'},stops:['buck','stjames','bigben','eye','traf','ng','covent']},
+ {id:'gratis',ic:'🆓',n:{es:'Londres gratis',en:'Free London'},s:{es:'Un día sin pagar entradas',en:'A day with no tickets'},stops:['bm','covent','traf','mill','tate','borough','tbridge']},
+ {id:'ninos',ic:'🧒',n:{es:'Con niños',en:'With kids'},s:{es:'Dinosaurios, parque y barco pirata',en:'Dinosaurs, park and pirate ship'},stops:['nhm','sci','hyde','buck']},
+ {id:'rio',ic:'⛴️',n:{es:'Por el río',en:'Along the river'},s:{es:'De la Torre a Greenwich',en:'Tower to Greenwich'},stops:['tower','tbridge','sky','greenwich']},
+ {id:'mercados',ic:'🛍️',n:{es:'Domingo de mercados',en:'Market Sunday'},s:{es:'Flores, canal y Camden',en:'Flowers, canal and Camden'},stops:['columbia','little','camden','primrose']},
+ {id:'latino',ic:'🫓',n:{es:'Ruta latina',en:'Latin route'},s:{es:'Sabor de casa en el sur',en:'A taste of home'},stops:['elephant','brixton']}
+];
+let plFilter='all', plOrder=null;
+const plMine = ()=>store.get('pl',{}); // {id:'want'|'done'}
+function plTag(p){ return p.free===1?`<span class="pill ok">${L({es:'GRATIS',en:'FREE'})}</span>`: p.free===2?`<span class="pill warn">${L({es:'Gratis por fuera',en:'Free outside'})}</span>`:`<span class="pill">${L({es:'De pago',en:'Paid'})}</span>`; }
+function renderPlaces(){
+  const mine=plMine(), q=($('#pl-q').value||'').trim().toLowerCase();
+  $('#pl-chips').innerHTML = Object.entries(PCATS).map(([k,c])=>`<button class="chip ${plFilter===k?'on':''}" onclick="plFilter='${k}';renderPlaces()">${c.ic} ${L(c.n)}</button>`).join('');
+  let list = LUGARES.filter(p=>{
+    if(plFilter==='free' && p.free!==1) return false;
+    if(plFilter==='fav' && !mine[p.id]) return false;
+    if(!['all','free','fav'].includes(plFilter) && !p.c.includes(plFilter)) return false;
+    if(q && !(p.n+' '+L(p.d)+' '+p.st).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if(plOrder) list.sort((a,b)=>plOrder[a.id]-plOrder[b.id]);
+  $('#st-total').textContent=LUGARES.length;
+  $('#st-free').textContent=LUGARES.filter(p=>p.free===1).length;
+  const v=Object.values(mine); $('#st-mine').textContent=`${v.filter(x=>x==='want').length}/${v.filter(x=>x==='done').length}`;
+  $('#places').innerHTML = list.length ? list.map(p=>{
+    const m=mine[p.id];
+    return `<article class="plc">
+      <div class="plc-img" id="pimg-${p.id}" onclick="openPlace('${p.id}')"><div class="ph-fb">📷</div>${m?`<span class="plc-mark">${m==='done'?'✓ '+L({es:'Ya fui',en:'Visited'}):'❤️ '+L({es:'Quiero ir',en:'Want to go'})}</span>`:''}</div>
+      <div class="plc-body">
+        <div class="row" style="justify-content:space-between;align-items:start"><h3 onclick="openPlace('${p.id}')" style="cursor:pointer">${esc(p.n)}</h3>${plTag(p)}</div>
+        <div class="small muted">🚇 ${esc(p.st)}${plOrder?` · ${plOrder[p.id]<1?Math.round(plOrder[p.id]*1000)+' m':plOrder[p.id].toFixed(1)+' km'}`:''}</div>
+        <p class="small mt">${esc(L(p.d))}</p>
+        <div class="row mt" style="flex-wrap:wrap;gap:6px">
+          <button class="btn sm red" onclick="openPlace('${p.id}')">${L({es:'Ver más',en:'More'})}</button>
+          <button class="btn sm ghost" onclick="routeTo('${p.id}')">🧭</button>
+          <button class="btn sm ghost" onclick="flyTo(${p.lat},${p.lng})">🗺️</button>
+          <button class="btn sm ghost" onclick="toggleMine('${p.id}')" title="${L({es:'Quiero ir / Ya fui',en:'Want / Visited'})}">${m==='want'?'❤️':m==='done'?'✅':'🤍'}</button>
+        </div>
+      </div></article>`;
+  }).join('') : `<p class="muted mt">${L({es:'No hay lugares con ese filtro.',en:'No places match.'})}</p>`;
+  list.forEach(async p=>{ try{ const src=await wikiImg(p.w,640); const el=document.getElementById('pimg-'+p.id); if(src&&el){ const fb=el.querySelector('.ph-fb'); if(fb) fb.outerHTML=`<img loading="lazy" alt="${esc(p.n)}" src="${src}" onerror="this.remove()">`; } }catch(e){} });
+  $('#itins').innerHTML = ITINS.map(it=>`<button class="tile" onclick="showItin('${it.id}')"><span class="em">${it.ic}</span><b>${L(it.n)}</b><small>${L(it.s)} · ${it.stops.length} ${L({es:'paradas',en:'stops'})}</small><small class="muted">${it.stops.map(id=>LUGARES.find(p=>p.id===id).n).join(' → ')}</small></button>`).join('');
+}
+function toggleMine(id){ const m=plMine(); m[id] = !m[id]?'want': m[id]==='want'?'done':undefined; if(!m[id]) delete m[id]; store.set('pl',m); renderPlaces(); toast(m[id]==='want'?'❤️ '+L({es:'Guardado en "Quiero ir"',en:'Saved to "Want to go"'}):m[id]==='done'?'✅ '+L({es:'Marcado como visitado',en:'Marked visited'}):L({es:'Quitado de tu lista',en:'Removed'})); }
+function haversine(a,b,c,d){ const R=6371,r=x=>x*Math.PI/180; const dl=r(c-a),dn=r(d-b); const h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
+async function sortNear(){
+  if(plOrder){ plOrder=null; renderPlaces(); return; }
+  try{ const c=await getPos(); plOrder={}; LUGARES.forEach(p=>plOrder[p.id]=haversine(c.latitude,c.longitude,p.lat,p.lng)); plFilter='all'; renderPlaces(); toast(L({es:'Ordenados del más cercano al más lejano',en:'Sorted by distance'})); }
+  catch(e){ toast(L({es:'Activa la ubicación del celular',en:'Turn on location'})); }
+}
+function routeTo(id){ const p=LUGARES.find(x=>x.id===id); closePlace(); go('transit'); $('#j-to').value=`${p.lat},${p.lng}`; $('#j-from').value=''; $('#j-out').innerHTML=`<p class="small">${L({es:'Destino',en:'Destination'})}: <b>${esc(p.n)}</b></p>`;
+  getPos().then(c=>{ $('#j-from').value=`${c.latitude.toFixed(5)},${c.longitude.toFixed(5)}`; planJourney(); }).catch(()=>{ toast(L({es:'Escribe desde dónde sales',en:'Type where you start'})); $('#j-from').focus(); }); }
+async function wikiSummary(p){
+  const lang = LANG==='es'?'es':'en', title = LANG==='es'?p.es:p.w;
+  const key='ws_'+lang+'_'+p.id, c=store.get(key,null); if(c) return c;
+  try{ const {data}=await getJSON(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`); if(data?.extract){ const r={x:data.extract,u:data.content_urls?.mobile?.page||''}; store.set(key,r); return r; } }catch(e){}
+  return null;
+}
+async function openPlace(id){
+  const p=LUGARES.find(x=>x.id===id), m=plMine()[id];
+  $('#pl-sheet').innerHTML = `<div class="sheet-img" id="sheet-img"><button class="sheet-x" onclick="closePlace()">✕</button></div>
+   <div style="padding:18px">
+    <div class="row" style="justify-content:space-between;align-items:start"><h2 style="font-size:1.6rem">${esc(p.n)}</h2>${plTag(p)}</div>
+    <div class="row mt" style="gap:6px"><button class="say" onclick="speak('${jsq(p.n)}')">🔊</button><span class="small muted">${L({es:'Escucha cómo se pronuncia',en:'Hear the pronunciation'})}</span></div>
+    <p class="mt">${esc(L(p.d))}</p>
+    <div class="notice mt">💡 ${esc(L(p.tip))}</div>
+    <p class="small mt">🚇 <b>${L({es:'Estación',en:'Station'})}:</b> ${esc(p.st)}</p>
+    <div class="mt" id="sheet-wiki"><span class="spin"></span></div>
+    <div class="grid g2 keep mt" style="grid-template-columns:1fr 1fr">
+      <button class="btn red" onclick="routeTo('${p.id}')">🧭 ${L({es:'Cómo llegar',en:'Directions'})}</button>
+      <button class="btn" onclick="closePlace();flyTo(${p.lat},${p.lng})">🗺️ ${L({es:'Ver en mapa',en:'On the map'})}</button>
+      <button class="btn ghost" onclick="toggleMine('${p.id}');openPlace('${p.id}')">${m==='want'?'❤️ '+L({es:'Quiero ir',en:'Want to go'}):m==='done'?'✅ '+L({es:'Ya fui',en:'Visited'}):'🤍 '+L({es:'Guardar',en:'Save'})}</button>
+      ${p.web?`<a class="btn ghost" href="${p.web}" target="_blank" rel="noopener">🌐 ${L({es:'Web oficial',en:'Official site'})}</a>`:`<a class="btn ghost" href="https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}" target="_blank" rel="noopener">📍 Google Maps</a>`}
+    </div>
+   </div>`;
+  $('#pl-modal').classList.add('on'); document.body.style.overflow='hidden';
+  wikiImg(p.w,1000).then(src=>{ if(src) $('#sheet-img').style.backgroundImage=`url("${src}")`; }).catch(()=>{});
+  const ws=await wikiSummary(p);
+  const box=$('#sheet-wiki'); if(!box) return;
+  box.innerHTML = ws ? `<h3>📖 ${L({es:'Un poco de historia',en:'A bit of history'})}</h3><p class="small mt">${esc(ws.x)}</p>${ws.u?`<a class="small" href="${ws.u}" target="_blank" rel="noopener">Wikipedia →</a>`:''}` : '';
+}
+function closePlace(){ $('#pl-modal').classList.remove('on'); document.body.style.overflow=''; }
+let itinLayer=null;
+function showItin(id){
+  const it=ITINS.find(x=>x.id===id); go('map');
+  setTimeout(()=>{
+    if(itinLayer) map.removeLayer(itinLayer);
+    itinLayer=L_.layerGroup().addTo(map);
+    const pts=it.stops.map(s=>LUGARES.find(p=>p.id===s));
+    L_.polyline(pts.map(p=>[p.lat,p.lng]),{color:'#EB0A1E',weight:5,dashArray:'8 8'}).addTo(itinLayer);
+    pts.forEach((p,i)=>L_.marker([p.lat,p.lng],{icon:L_.divIcon({className:'',html:`<div class="num">${i+1}</div>`,iconSize:[28,28],iconAnchor:[14,14]})}).addTo(itinLayer).bindPopup(`<b>${i+1}. ${esc(p.n)}</b><br><small>${esc(L(p.tip))}</small><br><button class="btn sm red mt" onclick="openPlace('${p.id}')">${L({es:'Ver más',en:'More'})}</button>`));
+    map.fitBounds(L_.latLngBounds(pts.map(p=>[p.lat,p.lng])),{padding:[40,40]});
+    $('#map-info').innerHTML = `<div class="card"><h3>${it.ic} ${L(it.n)}</h3><ol class="mt" style="padding-left:20px">${pts.map(p=>`<li><a href="javascript:openPlace('${p.id}')">${esc(p.n)}</a> <small class="muted">— 🚇 ${esc(p.st)}</small></li>`).join('')}</ol><button class="btn sm ghost mt" onclick="map.removeLayer(itinLayer);document.getElementById('map-info').innerHTML=''">✕ ${L({es:'Quitar ruta',en:'Clear route'})}</button></div>`;
+  },300);
+}
+
+/* =========================================================
+   SALUD (NHS)
+   ========================================================= */
+const LADDER = [
+ ['💊',{es:'Farmacia',en:'Pharmacy'},{es:'Gripa, dolor de cabeza, alergias, picaduras, dolor de garganta. Sin cita. Muchas farmacias tratan infecciones de oído o urinarias sin pasar por el médico.',en:'Colds, headaches, allergies, sore throats. No appointment.'},'#0A8A3A'],
+ ['🩺',{es:'Médico general (GP)',en:'GP (family doctor)'},{es:'Problemas que no son urgentes, chequeos, recetas, remisiones a especialistas. Regístrate apenas llegues: es gratis.',en:'Non-urgent problems, prescriptions, referrals. Register on arrival — it\'s free.'},'#0067B1'],
+ ['📞',{es:'111 (teléfono o 111.nhs.uk)',en:'111 (phone or 111.nhs.uk)'},{es:'Necesitas ayuda hoy pero no es una emergencia. Te dicen a dónde ir y pueden pedirte cita. Pide intérprete.',en:'Need help today but not an emergency. Ask for an interpreter.'},'#C77700'],
+ ['🏥',{es:'Urgent Treatment Centre',en:'Urgent Treatment Centre'},{es:'Esguinces, cortadas, fracturas pequeñas, quemaduras leves. Sin cita, generalmente menos espera que en A&E.',en:'Sprains, cuts, minor fractures. Walk-in.'},'#B30715'],
+ ['🚑',{es:'999 o A&E (urgencias)',en:'999 or A&E'},{es:'Solo emergencias graves: dolor de pecho, dificultad para respirar, desmayo, sangrado fuerte, señales de derrame. Ver hospitales en el mapa.',en:'Life-threatening emergencies only.'},'#EB0A1E']
+];
+const HEALTHACC = [
+ {t:{es:'📝 Cómo registrarte con un GP',en:'📝 How to register with a GP'},b:{es:'<ol><li>Busca un consultorio cercano en <a href="https://www.nhs.uk/service-search/find-a-gp" target="_blank" rel="noopener">nhs.uk/service-search/find-a-gp</a>.</li><li>Regístrate en línea o pide el formulario en recepción.</li><li>No te pueden negar el registro por no tener comprobante de dirección, documento o estatus migratorio.</li><li>Pide intérprete gratis para tus citas: <i>"Can I have a Spanish interpreter, please?"</i></li></ol>',en:'<ol><li>Find a GP on nhs.uk.</li><li>Register online or at reception.</li><li>You can\'t be refused for lack of ID or proof of address.</li><li>Ask for a free interpreter.</li></ol>'}},
+ {t:{es:'💷 ¿Cuánto cuesta?',en:'💷 What does it cost?'},b:{es:'<ul class="dots"><li>Registrarte y ver al GP es gratis para todos.</li><li>Urgencias (A&E) y el 111 no se cobran en el momento.</li><li>Los visitantes de corto plazo pueden recibir cobros por tratamientos de hospital; por eso es importante viajar con seguro médico.</li><li>Quienes tienen visa de más de 6 meses normalmente pagaron el "Immigration Health Surcharge" y usan el NHS como residentes.</li><li>En Inglaterra los medicamentos con receta tienen un costo fijo por ítem (hay exenciones, por ejemplo para menores de 16 y mayores de 60).</li></ul>',en:'<ul class="dots"><li>GP is free. A&E and 111 are not charged upfront. Visitors may be billed for hospital care — get insurance.</li></ul>'}},
+ {t:{es:'🦷 Dentista',en:'🦷 Dentist'},b:{es:'<p>El dentista del NHS tiene tarifas fijas por banda de tratamiento y a veces cuesta conseguir cupo. Busca en nhs.uk "find a dentist". Para dolor fuerte fuera de horario llama al 111.</p>',en:'<p>NHS dentists charge fixed band fees. Search "find a dentist" on nhs.uk; call 111 for urgent pain.</p>'}},
+ {t:{es:'🧠 Salud mental y soledad',en:'🧠 Mental health & loneliness'},b:{es:'<p>Llegar a otro país es duro. Puedes pedir ayuda psicológica gratis sin pasar por el GP en <a href="https://www.nhs.uk/talk" target="_blank" rel="noopener">nhs.uk/talk</a>. LAWRS ofrece consejería en español para mujeres, y Samaritans (116 123) atiende 24 horas.</p>',en:'<p>Self-refer to free NHS Talking Therapies. Samaritans 116 123, 24/7.</p>'}},
+ {t:{es:'🤰 Embarazo y niños',en:'🤰 Pregnancy & children'},b:{es:'<ul class="dots"><li>Si estás embarazada, regístrate con un GP o directamente con la maternidad del hospital lo antes posible.</li><li>Los niños deben registrarse con un GP; las vacunas del calendario infantil son gratis.</li><li>Todos los niños en edad escolar tienen derecho a colegio público gratis: se pide en el "council" del barrio.</li></ul>',en:'<ul class="dots"><li>Register pregnancy early. Children\'s vaccines and state school are free.</li></ul>'}}
+];
+
+/* =========================================================
+   TRABAJO Y ESTUDIO
+   ========================================================= */
+const WORKACC = [
+ {t:{es:'✅ ¿Puedo trabajar?',en:'✅ Can I work?'},b:{es:'<p>Solo si tu visa te da derecho a trabajar. Con visa de visitante <b>no se puede trabajar</b>, ni siquiera "por debajo". El empleador te pedirá un <b>share code</b> que generas en gov.uk ("prove your right to work").</p>',en:'<p>Only if your visa allows it. Visitors cannot work. Employers ask for a share code from gov.uk.</p>'}},
+ {t:{es:'🔢 National Insurance number',en:'🔢 National Insurance number'},b:{es:'<p>Es como tu número de seguridad social. Si tienes permiso de trabajo, pídelo gratis en <a href="https://www.gov.uk/apply-national-insurance-number" target="_blank" rel="noopener">gov.uk/apply-national-insurance-number</a>. Muchas visas ya lo traen en tu cuenta de eVisa. ⚠️ Nadie debe cobrarte por tramitarlo.</p>',en:'<p>Apply free on gov.uk. Never pay anyone for it.</p>'}},
+ {t:{es:'💷 Tus derechos básicos',en:'💷 Your basic rights'},b:{es:'<ul class="dots"><li>Salario mínimo desde abril 2026: <b>£12.71/h</b> (21+), £10.85 (18–20), £8.00 (16–17 y aprendices).</li><li>Vacaciones pagadas: 5,6 semanas al año para tiempo completo (pueden incluir los festivos).</li><li>Recibo de pago ("payslip") por escrito cada vez que te pagan.</li><li>Contrato o documento escrito con tus condiciones desde el primer día.</li><li>Nadie puede quedarse con tu pasaporte.</li></ul><p class="mt">Problemas: ACAS 0300 123 1100 (gratis).</p>',en:'<ul class="dots"><li>Minimum wage £12.71/h (21+). 5.6 weeks\' paid holiday. Written payslip and terms. No one can keep your passport.</li></ul>'}},
+ {t:{es:'🔎 Dónde buscar trabajo',en:'🔎 Where to look'},b:{es:'<ul class="dots"><li>Portales: Indeed, Reed, Totaljobs, LinkedIn, y la web del gobierno "Find a job".</li><li>Agencias de empleo (limpieza, hotelería, construcción, bodegas).</li><li>Las organizaciones latinas (IRMO, Casa Latina) tienen asesoría de empleo y ayudan con la hoja de vida (CV) en formato británico: 2 páginas, sin foto, sin edad ni estado civil.</li></ul>',en:'<ul class="dots"><li>Indeed, Reed, Totaljobs, LinkedIn, gov.uk Find a job. UK CVs: 2 pages, no photo.</li></ul>'}},
+ {t:{es:'🗣️ Aprender inglés (ESOL)',en:'🗣️ Learning English (ESOL)'},b:{es:'<ul class="dots"><li>Los "colleges" públicos dan cursos de inglés ESOL, muchas veces gratis o baratos según tu situación.</li><li>IRMO, Casa Latina y LAWRS (Language Café) tienen clases para la comunidad.</li><li>Las bibliotecas públicas son gratis: wifi, computadores y clubes de conversación.</li><li>Practica con el módulo de Frases de esta app y con la BBC Learning English (gratis).</li></ul>',en:'<ul class="dots"><li>ESOL at colleges, community classes, free libraries, BBC Learning English.</li></ul>'}},
+ {t:{es:'🎓 Convalidar mi título',en:'🎓 Get my degree recognised'},b:{es:'<p>Para comparar tu título colombiano con el británico se usa el servicio oficial <b>Ecctis</b> (tiene costo). Algunas profesiones reguladas (enfermería, medicina, derecho) exigen además registro ante su colegio profesional y examen de inglés.</p>',en:'<p>Use Ecctis for qualification recognition; regulated professions need extra registration.</p>'}}
+];
+function renderPay(){
+  const r=+$('#pay-rate').value||0, h=+$('#pay-hours').value||0, wk=r*h, mo=wk*52/12, yr=wk*52;
+  const low = r<12.71;
+  $('#pay-out').innerHTML = `<div class="arr"><span>${L({es:'Por semana',en:'Per week'})}</span><b>£${wk.toFixed(2)}</b></div><div class="arr"><span>${L({es:'Por mes (aprox.)',en:'Per month (approx.)'})}</span><b>£${mo.toFixed(2)}</b></div><div class="arr"><span>${L({es:'Por año',en:'Per year'})}</span><b>£${yr.toFixed(0)}</b></div>${RATES?`<div class="arr"><span>${L({es:'Al mes en pesos',en:'Monthly in COP'})}</span><b>${fmt(mo*RATES.COP,'COP')}</b></div>`:''}
+   <p class="small muted mt">${L({es:'Antes de impuestos y National Insurance. ',en:'Before tax and National Insurance. '})}</p>
+   ${low?`<div class="notice red mt">⚠️ ${L({es:'Este pago está por debajo del salario mínimo para mayores de 21 años (£12.71). Si es tu caso, consulta a ACAS: 0300 123 1100.',en:'Below the 21+ minimum wage (£12.71). Contact ACAS: 0300 123 1100.'})}</div>`:''}`;
+}
+
+/* =========================================================
+   VIVIENDA
+   ========================================================= */
+const REDFLAGS = [
+ {es:'Te piden depósito o "reserva" antes de ver el lugar.',en:'Deposit or "holding fee" before viewing.'},
+ {es:'El "dueño" está fuera del país y te manda las llaves por correo.',en:'The "landlord" is abroad and will post the keys.'},
+ {es:'El precio es demasiado barato para la zona.',en:'Too cheap for the area.'},
+ {es:'Pago solo en efectivo, por giro o sin recibo.',en:'Cash only, money transfer, no receipt.'},
+ {es:'No hay contrato escrito ("tenancy agreement").',en:'No written tenancy agreement.'}
+];
+const HOUSINGACC = [
+ {t:{es:'🔎 Dónde buscar',en:'🔎 Where to look'},b:{es:'<ul class="dots"><li><b>Habitación:</b> SpareRoom es la más usada para cuartos en casa compartida.</li><li><b>Apartamento:</b> Rightmove, Zoopla, OnTheMarket.</li><li>Grupos de latinos en Facebook ayudan, pero ahí se concentran las estafas: nunca pagues sin ver.</li><li>Busca cerca de una estación en las zonas 2 o 3: más barato y bien conectado.</li></ul>',en:'<ul class="dots"><li>SpareRoom for rooms; Rightmove, Zoopla for flats. Never pay before viewing.</li></ul>'}},
+ {t:{es:'💷 Depósito y costos',en:'💷 Deposit and costs'},b:{es:'<ul class="dots"><li>En Inglaterra el depósito normalmente no puede pasar de <b>5 semanas de arriendo</b> (para arriendos de menos de £50.000 al año).</li><li>La reserva ("holding deposit") no puede pasar de 1 semana de arriendo.</li><li>El arrendador debe meter tu depósito en un <b>sistema de protección</b> (DPS, TDS o mydeposits) en 30 días y darte el comprobante.</li><li>Las agencias no pueden cobrarte "fees" por hacer el contrato.</li><li>Pregunta si están incluidos los servicios ("bills included") y el "council tax".</li></ul>',en:'<ul class="dots"><li>Deposit usually capped at 5 weeks\' rent; holding deposit 1 week; must be protected within 30 days; no letting fees.</li></ul>'}},
+ {t:{es:'🪪 Right to Rent',en:'🪪 Right to Rent'},b:{es:'<p>Antes de arrendarte, el arrendador o la agencia debe comprobar que puedes vivir en el Reino Unido (con tu pasaporte, eVisa o un share code de gov.uk). Es normal que te lo pidan.</p>',en:'<p>Landlords must check your immigration status. This is normal.</p>'}},
+ {t:{es:'🏠 Problemas con el arrendador',en:'🏠 Problems with your landlord'},b:{es:'<p>Si no arreglan humedad, calefacción o te quieren sacar de un día para otro: consulta a Shelter (shelter.org.uk), Citizens Advice (0800 144 8848) o al departamento de vivienda del "council". Las organizaciones latinas te orientan en español.</p>',en:'<p>Contact Shelter, Citizens Advice or the council.</p>'}}
+];
+const VIEWLIST = [
+ {es:'¿Hay humedad o moho en paredes y ventanas?',en:'Damp or mould?'},{es:'¿Funciona la calefacción y el agua caliente?',en:'Heating and hot water work?'},
+ {es:'¿Cuántas personas comparten baño y cocina?',en:'How many share bathroom/kitchen?'},{es:'¿Qué incluye: luz, gas, agua, internet, council tax?',en:'What bills are included?'},
+ {es:'¿A cuántos minutos queda la estación y en qué zona?',en:'Distance to station and zone?'},{es:'¿Hay detector de humo y de monóxido de carbono?',en:'Smoke and CO alarms?'},
+ {es:'¿Me darán el comprobante de protección del depósito?',en:'Deposit protection certificate?'},{es:'Toma fotos y video del estado del cuarto el día que entres.',en:'Photograph the room on move-in day.'}
+];
+
+/* =========================================================
+   COMIDA LATINA
+   ========================================================= */
+const FOODAREAS = [
+ ['elephant','🐘',{es:'Elephant & Castle',en:'Elephant & Castle'},{es:'Restaurantes, panaderías y tiendas colombianas y ecuatorianas. Aquí encuentras arepas, empanadas, pandebono, buñuelos y productos de marcas de casa.',en:'Colombian & Ecuadorian restaurants, bakeries and shops.'}],
+ ['brixton','🥭',{es:'Brixton',en:'Brixton'},{es:'El mercado tiene plátano, yuca, ñame, mango, ají y carnicerías con cortes parecidos a los nuestros.',en:'Plantain, cassava, yam and Latin-style butchers.'}],
+ ['seven','🫘',{es:'Seven Sisters',en:'Seven Sisters'},{es:'Negocios latinos en el norte: tiendas, restaurantes y envíos de dinero.',en:'Latin businesses in north London.'}],
+ ['camden','🌮',{es:'Camden Market',en:'Camden Market'},{es:'Puestos de comida latina entre cientos de cocinas del mundo.',en:'Latin stalls among world food.'}]
+];
+const FOODWORDS = [['Plantain','Plátano (verde o maduro)'],['Cassava / yuca','Yuca'],['Coriander','Cilantro'],['Spring onion','Cebolla larga'],['Black beans / kidney beans','Fréjoles negros / rojos'],['Cornflour','Fécula de maíz (Maizena)'],['Pre-cooked maize flour','Harina para arepas'],['Mince','Carne molida'],['Pork belly','Tocino / chicharrón'],['Chicken thighs','Muslos de pollo'],['Semi-skimmed milk','Leche semidescremada'],['Double cream','Crema de leche espesa'],['Courgette','Calabacín'],['Aubergine','Berenjena'],['Pepper','Pimentón (o pimienta)'],['Sweetcorn','Mazorca / maíz tierno'],['Brown sugar / panela','Panela (búscala como "panela" o "piloncillo")'],['Self-checkout','Caja de autopago']];
+
+/* =========================================================
+   CLIMA, MALETA Y FESTIVOS
+   ========================================================= */
+const MONTHS = {es:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],en:['January','February','March','April','May','June','July','August','September','October','November','December']};
+const CLIM = [[8,3],[9,3],[12,4],[15,6],[18,9],[21,12],[24,14],[23,14],[20,12],[16,9],[11,6],[9,4]]; // promedios aproximados (°C)
+const DAYLIGHT = [8,10,12,13.5,15.5,16.5,16,14.5,12.5,10.5,8.5,7.5];
+function renderPack(){
+  const sel=$('#pack-month'); const cur=sel.value!==''?+sel.value:new Date().getMonth();
+  sel.innerHTML = MONTHS[LANG].map((m,i)=>`<option value="${i}" ${i===cur?'selected':''}>${m}</option>`).join('');
+  const [mx,mn]=CLIM[cur], cold=mx<=12, mid=mx>12&&mx<20;
+  const items = [
+   cold?{es:'Abrigo grueso impermeable (no basta una chaqueta de Medellín)',en:'Warm waterproof coat'}:mid?{es:'Chaqueta impermeable liviana',en:'Light waterproof jacket'}:{es:'Chaqueta liviana para la noche',en:'Light jacket for evenings'},
+   cold?{es:'Gorro, bufanda y guantes',en:'Hat, scarf and gloves'}:{es:'Gafas de sol',en:'Sunglasses'},
+   {es:'Sombrilla pequeña plegable',en:'Small folding umbrella'},
+   {es:'Zapatos cómodos e impermeables: en Londres se camina mucho',en:'Comfortable waterproof shoes'},
+   cold?{es:'Ropa térmica o camiseta de manga larga para usar por debajo',en:'Thermal base layers'}:{es:'Ropa por capas: buzo o saco ligero',en:'Layers: a light jumper'},
+   {es:'Adaptador de enchufe tipo G (3 patas)',en:'Type G plug adapter'},
+   {es:'Crema humectante y bálsamo de labios (el aire es seco con la calefacción)',en:'Moisturiser and lip balm'}
+  ];
+  $('#pack-out').innerHTML = `<div class="grid g2 keep" style="grid-template-columns:1fr 1fr"><div class="stat"><b>${mx}° / ${mn}°</b><small>${L({es:'máx / mín promedio',en:'avg high / low'})}</small></div><div class="stat"><b>~${DAYLIGHT[cur]} h</b><small>${L({es:'de luz al día',en:'of daylight'})}</small></div></div>
+   <h3 class="mt">🧳 ${L({es:'Lleva en la maleta',en:'Pack'})}</h3><ul class="dots mt">${items.map(i=>`<li>${esc(L(i))}</li>`).join('')}</ul>
+   ${cur>=10||cur<=1?`<div class="notice mt">${L({es:'🌑 En invierno oscurece hacia las 4 de la tarde. Planea las visitas al aire libre temprano.',en:'🌑 In winter it gets dark around 4pm.'})}</div>`:''}`;
+  const max=24;
+  $('#clim').innerHTML = CLIM.map((c,i)=>`<div class="cl ${i===cur?'on':''}" onclick="document.getElementById('pack-month').value=${i};renderPack()"><div class="bar-wrap"><div class="cbar" style="height:${c[0]/max*100}%"><span>${c[0]}°</span></div></div><small>${MONTHS[LANG][i].slice(0,3)}</small></div>`).join('');
+}
+const HOL_FALLBACK = [['2026-12-25','Christmas Day'],['2026-12-28','Boxing Day (substitute day)'],['2027-01-01','New Year’s Day'],['2027-03-26','Good Friday'],['2027-03-29','Easter Monday'],['2027-05-03','Early May bank holiday'],['2027-05-31','Spring bank holiday'],['2027-08-30','Summer bank holiday']];
+const HOL_ES = {'Christmas Day':'Navidad','Boxing Day':'Boxing Day (día después de Navidad)','New Year’s Day':'Año Nuevo','Good Friday':'Viernes Santo','Easter Monday':'Lunes de Pascua','Early May bank holiday':'Festivo de comienzos de mayo','Spring bank holiday':'Festivo de primavera','Summer bank holiday':'Festivo de verano'};
+let HOLS=null;
+async function loadHols(){
+  try{ const {data}=await getJSON('https://www.gov.uk/bank-holidays.json'); const ev=data?.['england-and-wales']?.events; if(!ev) throw 0; HOLS=ev.map(e=>[e.date,e.title]); store.set('hols',HOLS); }
+  catch(e){ HOLS=store.get('hols',null)||HOL_FALLBACK; }
+  renderHols();
+}
+function renderHols(){
+  if(!HOLS) return;
+  const today=new Date().toISOString().slice(0,10);
+  const up=HOLS.filter(h=>h[0]>=today).slice(0,6);
+  $('#hols').innerHTML = up.map(h=>{ const base=h[1].replace(/\s*\(.*\)/,''); const name = LANG==='es' ? (HOL_ES[base]||h[1]) + (/substitute/.test(h[1])?' (día compensatorio)':'') : h[1];
+    return `<div class="arr"><span>${esc(name)}</span><b style="font-weight:600">${tz(new Date(h[0]+'T12:00:00Z'),'Europe/London',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}</b></div>`; }).join('') + `<p class="small muted mt">${L({es:'Inglaterra y Gales. Fuente: gov.uk',en:'England & Wales. Source: gov.uk'})}</p>`;
+}
+
+function renderModules(){
+  renderPlaces();
+  $('#ladder').innerHTML = LADDER.map((s,i)=>`<div class="step"><div class="sn" style="background:${s[3]}">${s[0]}</div><div><b>${i+1}. ${esc(L(s[1]))}</b><div class="small muted">${esc(L(s[2]))}</div></div></div>`).join('') + `<p class="small muted mt">${L({es:'De arriba hacia abajo: de lo más leve a lo más grave.',en:'Top to bottom: least to most serious.'})}</p>`;
+  renderAcc($('#health-acc'),HEALTHACC); renderAcc($('#work-acc'),WORKACC); renderPay();
+  $('#redflags').innerHTML = REDFLAGS.map(r=>`<li>${esc(L(r))}</li>`).join('');
+  renderAcc($('#housing-acc'),HOUSINGACC);
+  const vd=store.get('view',[]);
+  $('#viewlist').innerHTML = VIEWLIST.map((v,i)=>`<label class="chk ${vd.includes(i)?'done':''}"><input type="checkbox" ${vd.includes(i)?'checked':''} onchange="let d=store.get('view',[]);d=d.includes(${i})?d.filter(x=>x!==${i}):[...d,${i}];store.set('view',d);renderModules()"><span class="t">${esc(L(v))}</span></label>`).join('');
+  $('#food-areas').innerHTML = FOODAREAS.map(f=>`<div class="card"><div style="font-size:1.6rem">${f[1]}</div><h3 class="mt">${esc(L(f[2]))}</h3><p class="small muted">${esc(L(f[3]))}</p><div class="row mt" style="gap:6px"><button class="btn sm ghost" onclick="routeTo('${f[0]}')">🧭</button><button class="btn sm ghost" onclick="openPlace('${f[0]}')">${L({es:'Ver',en:'View'})}</button></div></div>`).join('');
+  $('#food-words').innerHTML = FOODWORDS.map((w,i)=>`<tr><td><b>${esc(w[0])}</b> <button class="say" style="width:26px;height:26px;font-size:.7rem" onclick="speak(FOODWORDS[${i}][0])">🔊</button></td><td style="font-weight:400;text-align:right">${esc(w[1])}</td></tr>`).join('');
+  renderPack(); renderHols();
+}
+
 /* ---------- Render all ---------- */
 function renderAll(){
   renderFares(); renderAcc($('#how-acc'),HOW); renderSits(); renderSOS(); renderCheck(); renderAcc($('#visa-acc'),VISA);
@@ -1183,6 +1653,7 @@ function renderAll(){
   $('#culture').innerHTML = CULTURE.map(c=>`<div class="card"><div style="font-size:1.6rem">${c[0]}</div><h3 class="mt">${esc(L(c[1]))}</h3><p class="small muted">${esc(L(c[2]))}</p></div>`).join('');
   $('#slang').innerHTML = SLANG.map(s=>`<tr><td><b>${esc(s[0])}</b> <button class="say" style="width:26px;height:26px;font-size:.7rem" onclick="speak('${s[0].replace(/'/g,"\\'")}')">🔊</button></td><td style="font-weight:400;text-align:right">${esc(s[1])}</td></tr>`).join('');
   renderAcc($('#safety'),SAFETY);
+  renderModules();
   if(map) renderChips();
   if(RATES) renderFX(); if(WX) renderWeather();
   if(loadStatus._done) loadStatus();
@@ -1205,7 +1676,10 @@ $('#fx-amt').addEventListener('input',renderFX); $('#fx-from').addEventListener(
 $('#arr-q').addEventListener('keydown',e=>{ if(e.key==='Enter') searchStop(); });
 $('#j-to').addEventListener('keydown',e=>{ if(e.key==='Enter') planJourney(); });
 setInterval(tick,15000);
-loadHero(); loadWeather(); loadRates();
+loadHero(); loadWeather(); loadRates(); loadHols();
+$('#pl-q').addEventListener('input',renderPlaces);
+['pay-rate','pay-hours'].forEach(id=>$('#'+id).addEventListener('input',renderPay));
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closePlace(); });
 setTimeout(()=>$('#splash').classList.add('off'),900);
 const h=location.hash.slice(1); if(h && document.getElementById('v-'+h)) go(h);
 </script>
