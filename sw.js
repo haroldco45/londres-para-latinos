@@ -1,5 +1,5 @@
 /* Londres para Latinos — Service Worker (Vibras Positivas HM) */
-const VERSION = 'lxl-v1';
+const VERSION = 'lxl-v2';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'];
