@@ -570,6 +570,61 @@ footer.foot b{color:var(--ink)}
 
 </main>
 
+<!-- ===== Red de ciudades "para Latinos" (Vibras Positivas HM) ===== -->
+<style>
+.cx-wrap{max-width:960px;margin:28px auto 0;padding:0 16px}
+.cx-wrap h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-size:1.5rem;margin:0}
+.cx-wrap p.cx-sub{margin:4px 0 12px;font-size:.9rem;opacity:.7}
+.cx-grid{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.cx-card{flex:0 0 150px;scroll-snap-align:start;display:flex;flex-direction:column;gap:2px;padding:14px;border-radius:16px;text-decoration:none;color:inherit;border:2px solid var(--red,#EB0A1E);background:rgba(235,10,30,.05)}
+.cx-card:hover{background:rgba(235,10,30,.12)}
+.cx-card .cx-f{font-size:1.8rem;line-height:1}
+.cx-card b{font-size:1rem;margin-top:6px}
+.cx-card small{font-size:.78rem;opacity:.7}
+.cx-card .cx-go{margin-top:6px;font-size:.8rem;font-weight:700;color:var(--red,#EB0A1E)}
+.cx-card.cx-soon{border-style:dashed;opacity:.65;pointer-events:none}
+</style>
+<section class="cx-wrap" id="cx-ciudades" data-me="londres" aria-label="Otras ciudades">
+  <h2 id="cx-t">🌎 Otras ciudades para latinos</h2>
+  <p class="cx-sub" id="cx-s">La misma guía, en otras ciudades del mundo. Toca una para abrirla.</p>
+  <div class="cx-grid" id="cx-grid"></div>
+</section>
+<script>
+(function(){
+  /* Lista central: se edita en un solo lugar y todas las apps la leen.
+     Si no hay conexión, se usa esta copia de respaldo. */
+  var HUB='https://haroldco45.github.io/latinos-por-el-mundo/ciudades.json';
+  var FALLBACK=[
+    {id:'londres',flag:'🇬🇧',es:'Londres',en:'London',pais:{es:'Reino Unido',en:'United Kingdom'},url:'https://haroldco45.github.io/londres-para-latinos/'},
+    {id:'madrid',flag:'🇪🇸',es:'Madrid',en:'Madrid',pais:{es:'España',en:'Spain'},url:'https://haroldco45.github.io/madrid-para-latinos/'},
+    {id:'bilbao',flag:'🇪🇸',es:'Bilbao',en:'Bilbao',pais:{es:'España',en:'Spain'},url:'https://haroldco45.github.io/bilbao-para-latinos/'},
+    {id:'medellin',flag:'🇨🇴',es:'Medellín',en:'Medellín',pais:{es:'Colombia',en:'Colombia'},url:'https://haroldco45.github.io/medellin-para-latinos/'},
+    {id:'miami',flag:'🇺🇸',es:'Miami',en:'Miami',pais:{es:'Estados Unidos',en:'United States'},url:'https://haroldco45.github.io/miami-para-latinos/'},
+    {id:'nueva-york',flag:'🇺🇸',es:'Nueva York',en:'New York',pais:{es:'Estados Unidos',en:'United States'},url:'https://haroldco45.github.io/nueva-york-para-latinos/'}
+  ];
+  var box=document.getElementById('cx-ciudades'), me=box.getAttribute('data-me'), list=FALLBACK;
+  try{ var c=JSON.parse(localStorage.getItem('cx_ciudades')||'null'); if(c&&c.length) list=c; }catch(e){}
+  function lang(){ return (document.documentElement.lang||'es').slice(0,2)==='en'?'en':'es'; }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];}); }
+  function render(){
+    var L=lang();
+    document.getElementById('cx-t').textContent = L==='en'?'🌎 More cities for Latinos':'🌎 Otras ciudades para latinos';
+    document.getElementById('cx-s').textContent = L==='en'?'The same guide in other cities around the world. Tap one to open it.':'La misma guía, en otras ciudades del mundo. Toca una para abrirla.';
+    document.getElementById('cx-grid').innerHTML = list.filter(function(x){return x.id!==me;}).map(function(x){
+      var name=x[L]||x.es, pais=(x.pais&&(x.pais[L]||x.pais.es))||'';
+      if(x.pronto) return '<div class="cx-card cx-soon"><span class="cx-f">'+esc(x.flag)+'</span><b>'+esc(name)+'</b><small>'+esc(pais)+'</small><span class="cx-go">'+(L==='en'?'Coming soon':'Muy pronto')+'</span></div>';
+      return '<a class="cx-card" href="'+esc(x.url)+'"><span class="cx-f">'+esc(x.flag)+'</span><b>'+esc(name)+'</b><small>'+esc(pais)+'</small><span class="cx-go">'+(L==='en'?'Open →':'Abrir →')+'</span></a>';
+    }).join('');
+  }
+  render();
+  new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+  fetch(HUB,{cache:'no-cache'}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+    if(j&&j.ciudades&&j.ciudades.length){ list=j.ciudades; try{localStorage.setItem('cx_ciudades',JSON.stringify(list));}catch(e){} render(); }
+  }).catch(function(){});
+})();
+</script>
+<!-- ===== Fin red de ciudades ===== -->
+
 <footer class="foot">
   <div><b>Desarrollada por Vibras Positivas HM — Derechos de Autor Reservados</b></div>
   <div class="mt" data-t="footNote">Información de referencia, no es asesoría legal. Verifica trámites y tarifas en gov.uk y tfl.gov.uk. Datos de transporte: Powered by TfL Open Data. Mapa © OpenStreetMap, © CARTO. Fotos: Wikimedia Commons.</div>

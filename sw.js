@@ -1,5 +1,5 @@
 /* Londres para Latinos — Service Worker (Vibras Positivas HM) */
-const VERSION = 'lxl-v3';
+const VERSION = 'lxl-v4';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'];
@@ -16,7 +16,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   // Datos en vivo (TfL, clima, cambio, Wikipedia): red primero, caché como respaldo
-  const live = /api\.tfl\.gov\.uk|open-meteo\.com|er-api\.com|wikipedia\.org/.test(url.host);
+  const live = /api\.tfl\.gov\.uk|open-meteo\.com|er-api\.com|wikipedia\.org/.test(url.host) || /ciudades\.json$/.test(url.pathname);
   if (live || req.mode === 'navigate') {
     e.respondWith(fetch(req).then(r => {
       if (r.ok) { const cp = r.clone(); caches.open(VERSION).then(c => c.put(req, cp)); }
